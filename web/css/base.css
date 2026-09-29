@@ -342,8 +342,8 @@ body.has-bar .sticky-bar{display:flex}
 .toast{position:fixed;left:50%;bottom:26px;transform:translate(-50%,120%);z-index:120;
   background:var(--white);color:var(--ink);padding:14px 22px;font-family:var(--display);
   font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;font-stretch:100%;font-weight:700;
-  transition:transform .5s cubic-bezier(.2,.7,.2,1);max-width:90vw;text-align:center}
-.toast.on{transform:translate(-50%,0)}
+  transition:transform .5s cubic-bezier(.2,.7,.2,1);max-width:90vw;text-align:center;display:none}
+.toast.on{transform:translate(-50%,0);display:block}
 .toast.bad{background:var(--warn);color:#fff}
 
 /* ---- admin ---- */
