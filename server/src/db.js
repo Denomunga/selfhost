@@ -16,8 +16,8 @@ async function connectMongo() {
     database.collection("documents").createIndex({ collection: 1, id: 1 }, { unique: true }),
     database.collection("documents").createIndex({ collection: 1, updated_at: -1 }),
     database.collection("auth_users").createIndex({ username: 1 }, { unique: true }),
-    database.collection("counters").createIndex({ _id: 1 }, { unique: true }),
-    database.collection("assets").createIndex({ _id: 1 }, { unique: true })
+    database.collection("counters").createIndex({ _id: 1 }),
+    database.collection("assets").createIndex({ _id: 1 })
   ]);
   return database;
 }
