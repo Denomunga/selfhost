@@ -65,10 +65,14 @@ function mountLogin(){
     }
     // Force a router update to recognize the new session state
     btn.textContent = "Success!";
+    console.log("[Login] Successful, Auth.session:", Auth.session);
+    console.log("[Login] DB.canEdit:", DB.canEdit, "DB.uid:", DB.uid);
+    
+    // Direct redirect without hash manipulation
     setTimeout(() => {
       location.hash = "#/admin";
-      if(res.mustChange) setTimeout(()=>passwordForm(Auth.session.uid, true), 400);
-    }, 100);
+      location.reload(); // Force page reload to ensure clean state
+    }, 200);
   });
 }
 

@@ -190,6 +190,8 @@ function render(){
 }
 
 window.addEventListener("hashchange", render);
+// Make render globally available for manual triggering
+window.render = render;
 
 /* ---------- 17. BOOT ---------- */
 
