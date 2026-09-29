@@ -1,0 +1,49 @@
+# Render blueprint for the Rift Motors API.
+#
+# This is the always-on backend the Vercel-hosted frontend talks to (see
+# vercel.json + vercel-build.js). MongoDB lives in Atlas, uploaded photos
+# in Cloudflare R2 — neither runs here.
+#
+#   1. Push this repo to GitHub/GitLab.
+#   2. Render → New → Blueprint → pick the repo → this file is detected.
+#   3. Fill in the sync:false secrets when Render asks, then deploy.
+#
+# Do NOT downgrade to the free plan: it sleeps after inactivity, which
+# kills the live event stream and gives visitors ~50s cold starts.
+
+services:
+  - type: web
+    name: rift-motors-api
+    runtime: docker
+    dockerContext: .
+    dockerfilePath: server/Dockerfile
+    plan: starter
+    healthCheckPath: /api/health
+    envVars:
+      - key: PORT
+        value: "4000"
+      # Render terminates TLS, so the session cookie can (and must) be
+      # Secure + SameSite=None — that's what lets a browser on the Vercel
+      # frontend stay signed in here.
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: COOKIE_SAMESITE
+        value: "none"
+      - key: TRUST_PROXY
+        value: "1"
+      # Everything below is secret / deployment-specific: set it in the
+      # Render dashboard (or in the prompt when creating from a blueprint).
+      - key: MONGODB_URI
+        sync: false        # mongodb+srv://... string from MongoDB Atlas
+      - key: JWT_SECRET
+        sync: false        # output of `openssl rand -hex 32`
+      - key: CORS_ORIGIN
+        sync: false        # https://your-app.vercel.app (comma-separate extras)
+      - key: R2_ACCOUNT_ID
+        sync: false        # from r2.dev dashboard (the hex account id)
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
+      - key: R2_BUCKET
+        sync: false        # e.g. rift-motors-uploads

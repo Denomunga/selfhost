@@ -1,0 +1,54 @@
+version: "3.8"
+
+services:
+  db:
+    image: mongo:7
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      MONGO_INITDB_DATABASE: rift_motors
+      MONGO_INITDB_ROOT_USERNAME: rift
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:?Set MONGO_ROOT_PASSWORD before starting Compose}
+    volumes:
+      - rift_mongodata:/data/db
+    ports:
+      - "127.0.0.1:27017:27017"
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet -u rift -p \"$${MONGO_INITDB_ROOT_PASSWORD}\" --authenticationDatabase admin --eval \"db.adminCommand('ping').ok\""]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  server:
+    build:
+      context: .
+      dockerfile: server/Dockerfile
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      MONGODB_URI: mongodb://rift:${MONGO_ROOT_PASSWORD:?Set MONGO_ROOT_PASSWORD before starting Compose}@db:27017/rift_motors?authSource=admin
+      MONGODB_DB: rift_motors
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET (openssl rand -hex 32) before starting Compose}
+      PORT: 4000
+      UPLOAD_DIR: /data/uploads
+      # The app listens for the reverse proxy on this host, one hop away.
+      TRUST_PROXY: "1"
+      # Set to "true" once HTTPS is live in front of this (you should not
+      # put plain HTTP on the public internet):
+      #   export COOKIE_SECURE=true
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+    volumes:
+      - rift_uploads:/data/uploads
+    ports:
+      # Loopback only — reach the app through your TLS reverse proxy
+      # (Caddy/nginx) on this machine, not by opening :4000 to the network.
+      - "127.0.0.1:4000:4000"
+
+volumes:
+  rift_mongodata:
+  rift_uploads:
