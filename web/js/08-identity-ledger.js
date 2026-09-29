@@ -45,7 +45,7 @@ const Auth = {
       this.session = {uid:res.user.id, username:res.user.username, role:res.user.role, name:res.user.name};
       DB.canEdit = true; DB.uid = res.user.id; DB.role = res.user.role;
       DB.startPolling();
-      await DB.refreshAll().catch(()=>{});
+      DB.refreshAll().catch(()=>{});
       return {ok:true, mustChange: !!res.user.mustChange};
     }catch(err){
       return {ok:false, msg: (err && err.message) || "Username or password is wrong."};
