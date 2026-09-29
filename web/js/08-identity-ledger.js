@@ -60,6 +60,8 @@ const Auth = {
     DB.canEdit = false; DB.uid = null; DB.role = null;
     DB.startPolling();
     await DB.refreshAll().catch(()=>{});
+    // Redirect to home after sign out
+    location.hash = "#/";
   },
 
   async changePassword(uid, current, next){

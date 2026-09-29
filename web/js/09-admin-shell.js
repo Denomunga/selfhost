@@ -42,7 +42,10 @@ function viewLogin(){
 }
 
 function mountLogin(){
-  const f = $("#login-form"); if(!f) return;
+  console.log("[mountLogin] Function called");
+  const f = $("#login-form"); 
+  console.log("[mountLogin] Login form element:", f);
+  if(!f) return;
   const eye = $("#lg-eye");
   if(eye) eye.addEventListener("click", ()=>{
     const p = $("#lg-pass");
@@ -51,12 +54,18 @@ function mountLogin(){
   });
   f.addEventListener("submit", async e=>{
     e.preventDefault();
+    console.log("[Login Form] Submit event triggered");
     const btn = $("#lg-go"), msg = $("#lg-msg");
     btn.disabled = true; btn.textContent = "Checking…";
     msg.style.display = "none";
     let res;
+    console.log("[Login Form] Calling Auth.signIn");
     try{ res = await Auth.signIn($("#lg-user").value, $("#lg-pass").value); }
-    catch(err){ res = {ok:false, msg:"Something went wrong signing in. Please try again."}; }
+    catch(err){ 
+      console.error("[Login Form] Auth.signIn error:", err);
+      res = {ok:false, msg:"Something went wrong signing in. Please try again."}; 
+    }
+    console.log("[Login Form] Auth.signIn result:", res);
     if(!res.ok){
       btn.disabled = false; btn.textContent = "Sign in";
       msg.className = "notice notice--bad"; msg.textContent = res.msg; msg.style.display = "block";
@@ -65,14 +74,16 @@ function mountLogin(){
     }
     // Force a router update to recognize the new session state
     btn.textContent = "Success!";
-    console.log("[Login] Successful, Auth.session:", Auth.session);
-    console.log("[Login] DB.canEdit:", DB.canEdit, "DB.uid:", DB.uid);
+    console.log("[Login Form] Login successful, Auth.session:", Auth.session);
+    console.log("[Login Form] DB.canEdit:", DB.canEdit, "DB.uid:", DB.uid);
+    console.log("[Login Form] Current hash before redirect:", location.hash);
     
-    // Direct redirect without hash manipulation
+    // Simple hash change - let the router handle it
     setTimeout(() => {
+      console.log("[Login Form] About to change hash to #/admin");
       location.hash = "#/admin";
-      location.reload(); // Force page reload to ensure clean state
-    }, 200);
+      console.log("[Login Form] Hash after change:", location.hash);
+    }, 50);
   });
 }
 

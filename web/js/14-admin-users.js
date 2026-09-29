@@ -291,7 +291,11 @@ function mountAdmin(){
     refreshAdmin();
   }));
   bindOnce($("#sb-toggle"), "click", ()=>$("#sb").classList.toggle("open"));
-  bindOnce($("#a-out"), "click", ()=>{ Auth.signOut(); toast("Signed out"); render(); });
+  bindOnce($("#a-out"), "click", async ()=>{ 
+    await Auth.signOut(); 
+    toast("Signed out"); 
+    location.hash = "#/"; 
+  });
   bindOnce($("#a-pw"), "click", ()=>passwordForm(Auth.session.uid, false));
   mountAdminBody();
   const u = Auth.user;
