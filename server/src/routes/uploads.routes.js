@@ -45,7 +45,17 @@ const upload = multer({
 const router = express.Router();
 
 router.post("/", (req, res, next) => {
-  if (!req.session) return res.status(401).json({ error: "Sign in to continue." });
+  console.log("[UPLOAD] Upload request received");
+  console.log("[UPLOAD] Request session:", req.session);
+  console.log("[UPLOAD] Request cookies:", req.cookies);
+  console.log("[UPLOAD] Request headers:", Object.keys(req.headers));
+  
+  if (!req.session) {
+    console.log("[UPLOAD] No session found, returning 401");
+    return res.status(401).json({ error: "Sign in to continue." });
+  }
+  
+  console.log("[UPLOAD] Session valid, proceeding with upload");
   upload.single("file")(req, res, (err) => {
     // The storage step below is async — route its failures into the error
     // middleware instead of leaving a floating rejection.

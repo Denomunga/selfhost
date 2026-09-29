@@ -102,8 +102,15 @@ router.get("/collections/:coll", wrap(async (req, res) => {
 
 router.put("/collections/:coll/:id", express.json({ limit: "2mb" }), wrap(async (req, res) => {
   const { coll, id } = req.params;
+  console.log("[COLLECTIONS] PUT request for collection:", coll, "id:", id);
+  console.log("[COLLECTIONS] Request session:", req.session);
+  console.log("[COLLECTIONS] Can write check:", canWrite(coll, req.session));
+  
   if (!ALL_COLLECTIONS.includes(coll)) return res.status(404).json({ error: "No such collection." });
-  if (!canWrite(coll, req.session)) return res.status(403).json({ error: "You can't save changes here." });
+  if (!canWrite(coll, req.session)) {
+    console.log("[COLLECTIONS] Permission denied for collection:", coll, "session:", req.session);
+    return res.status(403).json({ error: "You can't save changes here." });
+  }
   if (!id || id.length > 200) return res.status(400).json({ error: "Invalid document id." });
   try {
     // The audit trail is append-only: writing an entry that already
@@ -126,7 +133,7 @@ router.put("/collections/:coll/:id", express.json({ limit: "2mb" }), wrap(async 
     resetPublicCache();
     res.status(204).end();
   } catch (e) {
-    console.error("collection write failed", coll, id, e);
+    console.error("[COLLECTIONS] write failed", coll, id, e);
     res.status(500).json({ error: "Could not save that." });
   }
 }));

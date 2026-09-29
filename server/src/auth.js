@@ -75,6 +75,13 @@ function verifySession(token) {
 }
 
 function setSessionCookie(res, token) {
+  console.log("[AUTH] Setting session cookie");
+  console.log("[AUTH] Cookie name:", COOKIE_NAME);
+  console.log("[AUTH] Cookie sameSite:", COOKIE_SAMESITE);
+  console.log("[AUTH] Cookie secure:", process.env.COOKIE_SECURE === "true");
+  console.log("[AUTH] Cookie maxAge:", SESSION_MAX_AGE_MS);
+  console.log("[AUTH] Token length:", token.length);
+  
   res.cookie(COOKIE_NAME, token, {
     httpOnly: true,
     sameSite: COOKIE_SAMESITE,
@@ -82,6 +89,8 @@ function setSessionCookie(res, token) {
     maxAge: SESSION_MAX_AGE_MS,
     path: "/"
   });
+  
+  console.log("[AUTH] Session cookie set successfully");
 }
 
 function clearSessionCookie(res) {
