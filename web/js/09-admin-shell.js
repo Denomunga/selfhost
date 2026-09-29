@@ -78,16 +78,19 @@ function mountLogin(){
     console.log("[Login Form] DB.canEdit:", DB.canEdit, "DB.uid:", DB.uid);
     console.log("[Login Form] Current hash before redirect:", location.hash);
     
-    // Direct render call to bypass hash change issues
+    // Direct DOM manipulation to show admin dashboard
     setTimeout(() => {
-      console.log("[Login Form] About to directly render admin dashboard");
+      console.log("[Login Form] About to directly show admin dashboard");
       location.hash = "#/admin";
-      // Force immediate render
-      if(typeof window.render === "function") {
-        console.log("[Login Form] Calling window.render() directly");
-        window.render();
+      // Direct DOM manipulation
+      const app = $("#app");
+      if(app) {
+        console.log("[Login Form] Found app element, setting admin HTML");
+        app.innerHTML = viewAdmin();
+        console.log("[Login Form] HTML set, calling mountAdmin");
+        mountAdmin();
       } else {
-        console.error("[Login Form] window.render is not available");
+        console.error("[Login Form] Could not find app element");
       }
     }, 100);
   });
