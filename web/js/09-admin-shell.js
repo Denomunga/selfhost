@@ -78,12 +78,18 @@ function mountLogin(){
     console.log("[Login Form] DB.canEdit:", DB.canEdit, "DB.uid:", DB.uid);
     console.log("[Login Form] Current hash before redirect:", location.hash);
     
-    // Simple hash change - let the router handle it
+    // Direct render call to bypass hash change issues
     setTimeout(() => {
-      console.log("[Login Form] About to change hash to #/admin");
+      console.log("[Login Form] About to directly render admin dashboard");
       location.hash = "#/admin";
-      console.log("[Login Form] Hash after change:", location.hash);
-    }, 50);
+      // Force immediate render
+      if(typeof window.render === "function") {
+        console.log("[Login Form] Calling window.render() directly");
+        window.render();
+      } else {
+        console.error("[Login Form] window.render is not available");
+      }
+    }, 100);
   });
 }
 
