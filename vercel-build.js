@@ -26,7 +26,7 @@ fs.writeFileSync(
 
 const csp = [
   "default-src 'self'",
-  "script-src 'self'",
+  "script-src 'self' blob:",
   "script-src-attr 'unsafe-inline'",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' data: https://fonts.gstatic.com",
