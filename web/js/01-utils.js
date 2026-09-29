@@ -2,7 +2,7 @@
 /* Utilities — formatting (KSh, KM, dates), DOM helpers, toast and modal. */
 
 /* ===========================================================
-   RIFT MOTORS — Subaru dealership application
+   SHERIFF MOTORS — Subaru dealership application
    Layers:  art  ·  data  ·  views  ·  admin  ·  router
    =========================================================== */
 

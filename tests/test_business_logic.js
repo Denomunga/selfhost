@@ -11,13 +11,13 @@ function loadFrontend(ctx, bridge) {
 
 /* ---------- fake server (same contract as test_frontend_api.js) ---------- */
 const FAKE = { docs: new Map(), users: new Map(), counters: new Map(), sessions: new Map(), nextTok: 1 };
-FAKE.users.set('admin', {id:'admin', username:'admin', email:'admin@riftmotors.com', name:'Administrator',
+FAKE.users.set('admin', {id:'admin', username:'admin', email:'admin@sheriffmotors.com', name:'Administrator',
   role:'admin', password:'admin', mustChange:false, active:true, createdAt:new Date().toISOString(), lastLogin:null});
-FAKE.docs.set('users:admin', {username:'admin', email:'admin@riftmotors.com', name:'Administrator', role:'admin', mustChange:false, active:true});
+FAKE.docs.set('users:admin', {username:'admin', email:'admin@sheriffmotors.com', name:'Administrator', role:'admin', mustChange:false, active:true});
 
 function docKey(c,id){ return c+':'+id; }
 function collectionDocs(c){ const out=[]; for(const [k,v] of FAKE.docs){ if(k.startsWith(c+':')) out.push(Object.assign({id:k.slice(c.length+1)}, v)); } return out; }
-function sessionFor(){ const m=(FAKE.currentCookie||'').match(/rift_session=([^;]+)/); return m ? FAKE.sessions.get(m[1])||null : null; }
+function sessionFor(){ const m=(FAKE.currentCookie||'').match(/sheriff_session=([^;]+)/); return m ? FAKE.sessions.get(m[1])||null : null; }
 
 async function handle(url, opts){
   const u = new URL(url, 'http://x'); const p = u.pathname, method=(opts.method||'GET').toUpperCase();
@@ -30,7 +30,7 @@ async function handle(url, opts){
     const u2=[...FAKE.users.values()].find(x=>x.username===body.username||x.email===body.username);
     if(!u2||u2.password!==body.password) return json(401,{error:'Username or password is wrong.'});
     const tok='tok'+(FAKE.nextTok++); FAKE.sessions.set(tok,{uid:u2.id,username:u2.username,role:u2.role,name:u2.name});
-    FAKE.currentCookie='rift_session='+tok;
+    FAKE.currentCookie='sheriff_session='+tok;
     return json(200,{user:{id:u2.id,username:u2.username,role:u2.role,name:u2.name,mustChange:u2.mustChange}});
   }
   if(p==='/api/auth/me' && method==='GET'){
@@ -98,7 +98,7 @@ const fresh=()=>{ for(const k in store) delete store[k]; };
   const ok=(n,c,e)=>out.push(`${c?'PASS':'FAIL'}  ${n}${e!==undefined?'  — '+e:''}`);
 
   // seed one vehicle (with private cost) + two parts (with private cost) + settings
-  FAKE.docs.set('settings:site', {dealership:"Rift Motors", whatsapp:"254700000000", vatRate:16});
+  FAKE.docs.set('settings:site', {dealership:"Sheriff Motors", whatsapp:"254700000000", vatRate:16});
   FAKE.docs.set('cars:test-forester', {make:"SUBARU", model:"Forester", variant:"XT", year:2018, price:4250000,
     mileage:78000, status:"AVAILABLE", featured:false, images:[], transmission:"CVT", fuel:"Petrol",
     drive:"Symmetrical AWD", body:"SUV", createdAt:new Date().toISOString(), soldAt:null});

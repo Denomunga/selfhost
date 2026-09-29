@@ -4,7 +4,7 @@
 const ENVS = {
   ngong:   {name:"Ngong Hills",       sky:["#0A0F1C","#3B2E4E","#A8543C","#F0A657"], ridge:["#2A2135","#17131F","#090810"],
             sun:[.74,.72,"#FFD8A0"], road:"#0B0D12", haze:"rgba(240,166,87,.34)", night:false, key:"#FFB463"},
-  rift:    {name:"Great Rift Valley", sky:["#0A1622","#25485E","#6E8A82","#E4C489"], ridge:["#1C3038","#112026","#070F13"],
+  sheriff:    {name:"Great Rift Valley", sky:["#0A1622","#25485E","#6E8A82","#E4C489"], ridge:["#1C3038","#112026","#070F13"],
             sun:[.26,.70,"#F4DFB0"], road:"#10131A", haze:"rgba(228,196,137,.30)", night:false, key:"#F0D9A8"},
   nairobi: {name:"Nairobi",           sky:["#03050A","#0A1322","#16253F","#2E4670"], ridge:["#0E1728","#080E18","#04070C"],
             sun:[.60,.84,"#5C7FB8"], road:"#07090E", haze:"rgba(52,82,136,.34)", night:true,  key:"#7FA6E0"},

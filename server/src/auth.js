@@ -21,7 +21,7 @@ if (
   process.exit(1);
 }
 
-const COOKIE_NAME = "rift_session";
+const COOKIE_NAME = "sheriff_session";
 const SESSION_MAX_AGE_MS = 12 * 60 * 60 * 1000; // 12 hours
 // SameSite=Lax is right when the frontend is served by this same app
 // (the default). The split deployment — frontend on Vercel, API on Render

@@ -154,7 +154,7 @@ function exportCSV(){
   const blob = new Blob([csv], {type:"text/csv"});
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob);
-  a.download = `riftmotors-invoices-${REPORT_RANGE}.csv`;
+  a.download = `sheriffmotors-invoices-${REPORT_RANGE}.csv`;
   document.body.appendChild(a); a.click();
   setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 1000);
 }

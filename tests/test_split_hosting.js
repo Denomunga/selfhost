@@ -25,7 +25,7 @@ const { execFile } = require("child_process");
 const ROOT = path.join(__dirname, "..");
 const SERVER = path.join(ROOT, "server");
 const PORT = 4571;
-const ALLOWED = ["https://rift-motors.vercel.app", "https://rift-motors-git-main.vercel.app"];
+const ALLOWED = ["https://sheriff-motors.vercel.app", "https://sheriff-motors-git-main.vercel.app"];
 const ALLOWED_FIRST = ALLOWED[0];
 const EVIL = "https://evil.example";
 const API = `http://127.0.0.1:${PORT}`;
@@ -43,7 +43,7 @@ process.env.CORS_ORIGIN = ALLOWED.join(", ");
 process.env.COOKIE_SAMESITE = "none";
 process.env.COOKIE_SECURE = "true";
 process.env.TRUST_PROXY = "1";
-const TMP_UPLOADS = fs.mkdtempSync(path.join(os.tmpdir(), "rift-split-uploads-"));
+const TMP_UPLOADS = fs.mkdtempSync(path.join(os.tmpdir(), "sheriff-split-uploads-"));
 process.env.UPLOAD_DIR = TMP_UPLOADS;
 delete process.env.R2_BUCKET; // local backend for the in-process boot
 
@@ -91,7 +91,7 @@ const ROWS = {
     { collection: "cars", id: "car-1", data: { id: "car-1", make: "Subaru", model: "Impreza", year: 2021, price: 25000, status: "available", images: [] }, updated_at: new Date() },
     { collection: "parts", id: "part-1", data: { id: "part-1", name: "Brake pads", category: "brakes", stock: 4, price: 89, images: [] }, updated_at: new Date() },
     { collection: "stories", id: "story-1", data: { id: "story-1", title: "Launch", body: "x" }, updated_at: new Date() },
-    { collection: "settings", id: "site", data: { siteName: "Rift Motors" }, updated_at: new Date() }
+    { collection: "settings", id: "site", data: { siteName: "Sheriff Motors" }, updated_at: new Date() }
   ],
   auth_users: [], // seeded after hashPassword is available
   counters: [],
@@ -244,7 +244,7 @@ function checkDeployArtifacts() {
     indexHtml.includes("<!--CSP-->"));
   check("web/js/api-config.js exists with same-origin default",
     fs.existsSync(path.join(ROOT, "web", "js", "api-config.js")) &&
-    /__RIFT_API_BASE__\s*=\s*window\.__RIFT_API_BASE__\s*\|\|\s*""/.test(
+    /__SHERIFF_API_BASE__\s*=\s*window\.__SHERIFF_API_BASE__\s*\|\|\s*""/.test(
       fs.readFileSync(path.join(ROOT, "web", "js", "api-config.js"), "utf8")));
 
   const buildSrc = fs.readFileSync(path.join(ROOT, "vercel-build.js"), "utf8");
@@ -272,7 +272,7 @@ function checkDeployArtifacts() {
 /* ---------- main: boot the real app, then hammer the cross-origin surface ---------- */
 async function main() {
   ROWS.auth_users.push({
-    _id: "usr-splitadmin", username: "admin", email: "admin@riftmotors.com",
+    _id: "usr-splitadmin", username: "admin", email: "admin@sheriffmotors.com",
     name: "Admin", role: "admin", password_hash: await hashPassword(PASSWORD),
     must_change: false, active: true, created_at: new Date(), last_login: null
   });
@@ -349,7 +349,7 @@ async function main() {
   check("POST login from allowed origin -> 200 + user payload",
     login.status === 200 && loginBody.user && loginBody.user.role === "admin");
   check("session cookie is SameSite=None; Secure; HttpOnly",
-    /rift_session=/.test(setCookie) && /SameSite=None/.test(setCookie) &&
+    /sheriff_session=/.test(setCookie) && /SameSite=None/.test(setCookie) &&
     /Secure/.test(setCookie) && /HttpOnly/.test(setCookie),
     setCookie.slice(0, 120));
 

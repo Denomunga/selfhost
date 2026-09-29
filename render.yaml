@@ -1,4 +1,4 @@
-# Render blueprint for the Rift Motors API.
+# Render blueprint for the Sheriff Motors API.
 #
 # This is the always-on backend the Vercel-hosted frontend talks to (see
 # vercel.json + vercel-build.js). MongoDB lives in Atlas, uploaded photos
@@ -46,4 +46,4 @@ services:
       - key: R2_SECRET_ACCESS_KEY
         sync: false
       - key: R2_BUCKET
-        sync: false        # e.g. rift-motors-uploads
+        sync: false        # e.g. sheriff-motors-uploads

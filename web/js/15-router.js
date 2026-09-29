@@ -193,7 +193,7 @@ window.addEventListener("hashchange", render);
 (async function boot(){
   runPreloader();
   Smooth.init();
-  $("#app").innerHTML = `<div class="loading">Rift Motors</div>`;
+  $("#app").innerHTML = `<div class="loading">Sheriff Motors</div>`;
   DB.onChange(()=>{
     // Live updates from other viewers, and confirmation of our own writes.
     // Never redraw under someone who is typing or mid-task.

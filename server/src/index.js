@@ -137,7 +137,7 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
 
 connectMongo().then(() => {
   app.listen(PORT, () => {
-    console.log(`Rift Motors server listening on http://localhost:${PORT}`);
+    console.log(`Sheriff Motors server listening on http://localhost:${PORT}`);
   });
 }).catch((err) => {
   console.error("Could not connect to MongoDB", err);

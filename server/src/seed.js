@@ -92,12 +92,12 @@ async function seedAdmin() {
   }
   const hash = await hashPassword("admin");
   await getDb().collection("auth_users").insertOne({
-    _id: "admin", username: "admin", email: "admin@riftmotors.com", name: "Administrator",
+    _id: "admin", username: "admin", email: "admin@sheriffmotors.com", name: "Administrator",
     role: "admin", password_hash: hash, must_change: true, active: true,
     created_at: new Date(), last_login: null
   });
   await upsertDoc("users", "admin", {
-    username: "admin", email: "admin@riftmotors.com", name: "Administrator", role: "admin",
+    username: "admin", email: "admin@sheriffmotors.com", name: "Administrator", role: "admin",
     mustChange: true, active: true, createdAt: new Date().toISOString(), lastLogin: null
   });
   console.log("\n  Default admin created — username: admin   password: admin");

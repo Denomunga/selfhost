@@ -929,7 +929,7 @@ function viewStory(id){
       <div class="v-hero-in"><div style="max-width:var(--maxw);margin:0 auto">
         <span class="tag">${esc(s.category||"Journal")}</span>
         <h1 class="h-1" style="margin:12px 0 10px;max-width:22ch">${esc(s.title)}</h1>
-        <div class="muted" style="letter-spacing:.1em">${esc(s.author||"Rift Motors")} · ${dateLabel(s.date)}</div>
+        <div class="muted" style="letter-spacing:.1em">${esc(s.author||"Sheriff Motors")} · ${dateLabel(s.date)}</div>
       </div></div>
     </section>
     <div class="wrap section--tight">
@@ -988,7 +988,7 @@ function viewAbout(){
     </section>
 
     <section class="section"><div class="wrap split">
-      <div class="split-media rv" style="order:2">${frameSVG({kind:"interior",env:"rift",seed:"about3",alt:"Interior"})}</div>
+      <div class="split-media rv" style="order:2">${frameSVG({kind:"interior",env:"sheriff",seed:"about3",alt:"Interior"})}</div>
       <div class="rv"><span class="tag">Why Subaru</span>
         <h2 class="h-2" style="margin:14px 0 18px">Because the road here is not consistent</h2>
         <p class="lede">A flat engine sitting low and a driveshaft running straight down the centre is not marketing. It is a layout that keeps a car composed when the surface changes underneath it — which, between Nairobi and almost anywhere, it will.</p>

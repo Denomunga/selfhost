@@ -11,7 +11,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: sheriff
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:?Set MONGO_ROOT_PASSWORD before starting Compose}
     volumes:
-      - rift_mongodata:/data/db
+      - sheriff_mongodata:/data/db
     ports:
       - "127.0.0.1:27017:27017"
     healthcheck:

@@ -11,7 +11,7 @@ let database;
 
 async function connectMongo() {
   await client.connect();
-  database = client.db(process.env.MONGODB_DB || "rift_motors");
+  database = client.db(process.env.MONGODB_DB || "sheriff_motors");
   await Promise.all([
     database.collection("documents").createIndex({ collection: 1, id: 1 }, { unique: true }),
     database.collection("documents").createIndex({ collection: 1, updated_at: -1 }),
