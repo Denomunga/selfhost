@@ -168,11 +168,11 @@ DB.activeParts = function(){ return this.allParts().filter(p=>p.status !== "DISC
 DB.part = function(id){ return this.parts.get(id) || null; };
 
 const DEFAULT_SETTINGS = {
-  dealership:"Rift Motors",
+  dealership:"Sheriff Motors",
   tagline:"Carefully selected Subaru vehicles in Kenya.",
   whatsapp:"254700000000",
   phone:"+254 700 000 000",
-  email:"hello@riftmotors.co.ke",
+  email:"hello@sheriffmotors.co.ke",
   address:"Kiambu Road, Runda, Nairobi",
   hours:"Mon–Fri 08:30–18:00 · Sat 09:00–16:00 · Sun by appointment",
   mapUrl:"https://maps.google.com/?q=Kiambu+Road+Nairobi",

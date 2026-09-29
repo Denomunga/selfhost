@@ -1,7 +1,7 @@
 {
-  "name": "rift-motors-server",
+  "name": "sheriff-motors-server",
   "version": "1.0.0",
-  "description": "Self-hosted backend for the Rift Motors Subaru dealership app — Express + MongoDB.",
+  "description": "Self-hosted backend for the Sheriff Motors Subaru dealership app — Express + MongoDB.",
   "private": true,
   "main": "src/index.js",
   "scripts": {

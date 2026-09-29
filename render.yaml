@@ -13,7 +13,7 @@
 
 services:
   - type: web
-    name: rift-motors-api
+    name: sheriff-motors-api
     runtime: docker
     dockerContext: .
     dockerfilePath: server/Dockerfile

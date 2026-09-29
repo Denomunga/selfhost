@@ -127,7 +127,7 @@ const SEED_STORIES = [
 "## Drivetrain","On a CVT car, drive it from cold and hold a steady 60. A shudder that fades as the fluid warms is a conversation, not necessarily a deal breaker — but it must be priced in.",
 "On a turbo car, check the oil before the engine is started and check the service intervals against the odometer. Turbo boxers are not fragile. Turbo boxers with skipped oil changes are.",
 "## Paper","Match the chassis number on the logbook to the plate on the firewall, confirm the import date, and confirm the duty was paid by the importer and not left for you."]},
-  { title:"Three new arrivals this month", category:"New Arrivals", author:"Rift Motors", cover:{kind:"side",env:"nairobi"},
+  { title:"Three new arrivals this month", category:"New Arrivals", author:"Sheriff Motors", cover:{kind:"side",env:"nairobi"},
     excerpt:"A Levorg GT-S, a low-mileage Touring Outback and a manual BRZ join the collection.",
     body:["The Levorg is the interesting one. A 1.6 direct-injection turbo in an estate body, sold mainly in Japan, and quick enough to make the small engine badge look like a typing error.",
 "The Touring Outback arrives with 48,000 kilometres and full EyeSight. It is the newest car we have had on the floor this year.",
@@ -203,11 +203,11 @@ const SEED_PARTS = [
 ];
 
 const DEFAULT_SETTINGS = {
-  dealership:"Rift Motors",
+  dealership:"Sheriff Motors",
   tagline:"Carefully selected Subaru vehicles in Kenya.",
   whatsapp:"254700000000",
   phone:"+254 700 000 000",
-  email:"hello@riftmotors.co.ke",
+  email:"hello@sheriffmotors.co.ke",
   address:"Kiambu Road, Runda, Nairobi",
   hours:"Mon–Fri 08:30–18:00 · Sat 09:00–16:00 · Sun by appointment",
   mapUrl:"https://maps.google.com/?q=Kiambu+Road+Nairobi",

@@ -3,7 +3,7 @@
  * "build" is just configuration injection from the API_BASE_URL env var:
  *
  *   1. web/api-config.js — tells the browser where the API lives
- *      (e.g. https://rift-motors-api.onrender.com).
+ *      (e.g. https://sheriff-motors-api.onrender.com).
  *   2. A CSP <meta> tag in index.html — whitelists that same origin for
  *      connect-src (fetch + the live event stream) and img-src (uploaded
  *      photos served by the API's /_blob endpoint). The meta tag replaces
@@ -20,8 +20,8 @@ const api = (process.env.API_BASE_URL || "").replace(/\/+$/, "");
 fs.writeFileSync(
   path.join(__dirname, "web", "js", "api-config.js"),
   `"use strict";\n` +
-  `window.__RIFT_API_BASE__ = ${JSON.stringify(api)};\n` +
-  `const API_BASE = (typeof window !== "undefined" && window.__RIFT_API_BASE__) || "";\n`
+  `window.__SHERIFF_API_BASE__ = ${JSON.stringify(api)};\n` +
+  `const API_BASE = (typeof window !== "undefined" && window.__SHERIFF_API_BASE__) || "";\n`
 );
 
 const csp = [

@@ -1,4 +1,4 @@
-# Rift Motors — self-hosted
+# Sheriff Motors — self-hosted
 
 A Subaru dealership site (vehicles + parts counter + a full back-office:
 invoices, payments, refunds, purchasing, a double-entry ledger, reports,
@@ -48,7 +48,7 @@ include a database readiness check before seeding.
 ## Quick start (Docker)
 
 ```bash
-cd rift-motors-selfhosted
+cd sheriff-motors-selfhosted
 export JWT_SECRET=$(openssl rand -hex 32)
 export MONGO_ROOT_PASSWORD=$(openssl rand -hex 32)
 docker compose up --build
@@ -79,7 +79,7 @@ You'll need Node.js 18+ and a MongoDB server (local or hosted —
 MongoDB Atlas and other MongoDB-compatible providers work).
 
 ```bash
-cd rift-motors-selfhosted/server
+cd sheriff-motors-selfhosted/server
 npm install
 cp .env.example .env
 # edit .env: set MONGODB_URI to your MongoDB connection string,
@@ -111,7 +111,7 @@ Network Access, allow `0.0.0.0/0` — Render's outbound IPs aren't fixed
 without a paid add-on; the database user + TLS is the actual protection.
 Set that string as `MONGODB_URI` in the Render dashboard.
 
-**2. Cloudflare R2.** Create a bucket (e.g. `rift-motors-uploads`) →
+**2. Cloudflare R2.** Create a bucket (e.g. `sheriff-motors-uploads`) →
 Manage R2 API Tokens → create a token with Object Read & Write → copy the
 Access Key ID / Secret and your account ID into the Render env vars
 (`R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`,
@@ -122,7 +122,7 @@ bucket keyed by their 32-hex-char asset IDs) before relying on it.
 
 **3. Render.** New → Blueprint → pick your repo → `render.yaml` is
 detected. Fill in `MONGODB_URI`, `JWT_SECRET` (`openssl rand -hex 32`),
-`CORS_ORIGIN` (your Vercel URL, e.g. `https://rift-motors.vercel.app`),
+`CORS_ORIGIN` (your Vercel URL, e.g. `https://sheriff-motors.vercel.app`),
 and the R2 values. Keep the `starter` plan — the free tier sleeps, which
 kills the live event stream and gives visitors ~50s cold starts.
 
@@ -130,7 +130,7 @@ kills the live event stream and gives visitors ~50s cold starts.
 `vercel.json`, which runs `vercel-build.js` (it writes your API origin
 into `web/api-config.js` and the CSP meta tag into `index.html`) and
 publishes `web/`. Set one env var: `API_BASE_URL` = your Render URL,
-e.g. `https://rift-motors-api.onrender.com`. Then run migrate + seed once
+e.g. `https://sheriff-motors-api.onrender.com`. Then run migrate + seed once
 against Atlas from any machine with the env vars set:
 
 ```bash
@@ -233,7 +233,7 @@ invoice, only admins can record expenses over a threshold).
 ## Directory layout
 
 ```
-rift-motors-selfhosted/
+sheriff-motors-selfhosted/
 ├── docker-compose.yml
 ├── vercel.json             Vercel config for the static frontend (split hosting)
 ├── vercel-build.js         injects API_BASE_URL into api-config.js + the CSP meta
@@ -296,7 +296,7 @@ No MongoDB or `npm install` needed — they run the real frontend in a
 sandboxed JS context against an in-memory fake of the API:
 
 ```bash
-cd rift-motors-selfhosted/tests
+cd sheriff-motors-selfhosted/tests
 node test_frontend_api.js
 node test_business_logic.js
 ```

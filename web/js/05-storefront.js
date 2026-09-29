@@ -116,7 +116,7 @@ function storyCard(s){
       <span class="tag">${esc(s.category||"Journal")}</span>
       <h3 class="h-3" style="margin:10px 0 8px">${esc(s.title)}</h3>
       <p class="muted" style="font-size:.92rem;margin:0">${esc(s.excerpt||"")}</p>
-      <div class="story-meta">${esc(s.author||"Rift Motors")} · ${dateLabel(s.date)}</div>
+      <div class="story-meta">${esc(s.author||"Sheriff Motors")} · ${dateLabel(s.date)}</div>
     </div>
   </article>`;
 }
