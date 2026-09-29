@@ -46,8 +46,10 @@ const Auth = {
       DB.canEdit = true; DB.uid = res.user.id; DB.role = res.user.role;
       DB.startPolling();
       DB.refreshAll().catch(()=>{});
+      console.log("[Auth] Sign in successful, session:", this.session);
       return {ok:true, mustChange: !!res.user.mustChange};
     }catch(err){
+      console.error("[Auth] Sign in failed:", err);
       return {ok:false, msg: (err && err.message) || "Username or password is wrong."};
     }
   },

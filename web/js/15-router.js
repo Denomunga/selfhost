@@ -160,7 +160,10 @@ function render(){
   else if(root === "/stories") html = id ? viewStory(id) : viewStories();
   else if(root === "/about")   html = viewAbout();
   else if(root === "/contact") html = viewContact();
-  else if(root === "/admin")   html = viewAdmin();
+  else if(root === "/admin")   {
+    console.log("[Router] /admin route, Auth.session:", Auth.session);
+    html = viewAdmin();
+  }
   else if(root === "/login")   html = Auth.session ? viewAdmin() : viewLogin();
   else                         html = viewHome();
 

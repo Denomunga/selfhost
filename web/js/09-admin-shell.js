@@ -63,8 +63,12 @@ function mountLogin(){
       $("#lg-pass").value = ""; $("#lg-pass").focus();
       return;
     }
-    location.hash = "#/admin";
-    if(res.mustChange) setTimeout(()=>passwordForm(Auth.session.uid, true), 400);
+    // Force a router update to recognize the new session state
+    btn.textContent = "Success!";
+    setTimeout(() => {
+      location.hash = "#/admin";
+      if(res.mustChange) setTimeout(()=>passwordForm(Auth.session.uid, true), 400);
+    }, 100);
   });
 }
 
