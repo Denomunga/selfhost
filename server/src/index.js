@@ -19,13 +19,9 @@ const { router: uploadsRouter, blobHandler } = require("./routes/uploads.routes"
 const app = express();
 const PORT = process.env.PORT || 4000;
 
-// Set TRUST_PROXY=1 (or the number of proxy hops in front of this server)
-// when running behind nginx/Caddy/a hosting load balancer, so rate limiting
-// and logs see real client IPs instead of the proxy's. Leave unset when the
-// app is reached directly.
-if (process.env.TRUST_PROXY) {
-  app.set("trust proxy", Number(process.env.TRUST_PROXY) || 1);
-}
+// Trust the first proxy (Render, nginx, Caddy, etc.) so rate limiting
+// sees real client IPs instead of the proxy's IP.
+app.set("trust proxy", 1);
 
 // Same-origin by default (the server also serves the frontend below).
 // Set CORS_ORIGIN when a browser on another origin talks to this API — the
