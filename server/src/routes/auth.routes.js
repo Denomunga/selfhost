@@ -19,7 +19,6 @@ const loginLimiter = rateLimit({
   limit: 20,
   standardHeaders: true,
   legacyHeaders: false,
-  trustProxy: !!process.env.TRUST_PROXY,
   skipSuccessfulRequests: true,
   message: { error: "Too many failed sign-in attempts. Wait a few minutes and try again." }
 });
@@ -31,7 +30,6 @@ const passwordLimiter = rateLimit({
   limit: 10,
   standardHeaders: true,
   legacyHeaders: false,
-  trustProxy: !!process.env.TRUST_PROXY,
   message: { error: "Too many password attempts. Wait a few minutes and try again." }
 });
 

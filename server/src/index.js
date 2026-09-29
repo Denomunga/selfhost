@@ -109,7 +109,6 @@ const apiLimiter = rateLimit({
   limit: 300,
   standardHeaders: true,
   legacyHeaders: false,
-  trustProxy: !!process.env.TRUST_PROXY,
   message: { error: "Too many requests from this connection. Wait a moment and try again." }
 });
 app.use("/api", apiLimiter);
