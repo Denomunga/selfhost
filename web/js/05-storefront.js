@@ -27,10 +27,23 @@ function navHTML(route){
     </div>
   </div></header>
   <div class="menu" id="menu">
-    ${NAV.map(([h,l])=>`<a href="${h}">${l}</a>`).join("")}
+    <div class="menu-head">
+      <span class="tag">Showroom Directory</span>
+      <span class="spec-chip">Subaru · Kenya</span>
+    </div>
+    <nav class="menu-nav">
+      ${NAV.map(([h,l], i)=>{
+        const on = (h === "#/" ? route === "/" : route.indexOf(h.slice(1).split("?")[0]) === 0);
+        return `<a href="${h}" class="menu-link ${on?"on":""}">
+          <span class="menu-idx">0${i+1}</span>
+          <span class="menu-label">${l}</span>
+          <span class="menu-arrow">→</span>
+        </a>`;
+      }).join("")}
+    </nav>
     <div class="menu-foot">
-      <a class="btn btn--solid" href="#/cars">View Subaru collection</a>
-      <a class="btn btn--wa" href="${waLink()}" target="_blank" rel="noopener">Chat on WhatsApp</a>
+      <a class="btn btn--solid" href="#/cars">View Subaru collection <span class="btn-arrow">→</span></a>
+      <a class="btn btn--wa" href="${waLink()}" target="_blank" rel="noopener">Chat on WhatsApp <span class="btn-arrow">→</span></a>
     </div>
   </div>`;
 }
