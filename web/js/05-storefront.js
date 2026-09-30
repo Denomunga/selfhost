@@ -131,7 +131,7 @@ const HOME_PHOTOS = {
   roads: "subaru-story.jpg", // Chapter 03: Kenyan roads.
   zoom: [ // Seven images, in order, for the zoom montage.
     "Subaru-Crosstrek-XV-Crawford-CDR-Series-Lift-Kit-Tuning-1.jpg", "outback-wilderness.jpg", "outback-bs.jpg",
-    "outback-front.jpg", "outback-bt.jpg", "subaru-story.jpg", "subaru-hero.jpg"
+    "outback-front.jpg", "IMG_1460-22443-08448.jpg", "subaru-story.jpg", "subaru-hero.jpg"
   ],
   about: "subaru-story.jpg", // Dealership/about strip.
   closing: "IMG_1460-22443-08448.jpg" // Final homepage image.
