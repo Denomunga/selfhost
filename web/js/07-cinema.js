@@ -16,7 +16,7 @@ const Smooth = {
       if(e.ctrlKey) return;
       const t = e.target;
       // never fight a scrollable panel the user is actually inside
-      if(t && t.closest && t.closest(".modal,.gal-strip,.tbl-wrap,.feat-picker,.menu")) return;
+      if(t && t.closest && t.closest(".modal,.gal-strip,.tbl-wrap,.feat-picker,.menu,.srch-drop")) return;
       e.preventDefault();
       const d = e.deltaMode === 1 ? e.deltaY * 20 : e.deltaMode === 2 ? e.deltaY * window.innerHeight : e.deltaY;
       this.target = clamp(this.target + d, 0, this.max());

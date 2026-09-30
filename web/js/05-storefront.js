@@ -419,7 +419,7 @@ function viewCars(){
       <div class="srch-wrap" style="margin-bottom:34px">
         <div class="srch-bar">
           <svg class="srch-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.6"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-          <input id="f-q" class="srch-input" type="search" autocomplete="off" placeholder="Search cars and parts — Forester, WRX, brake pads…" value="${esc(FILTER.q)}">
+          <input id="f-q" class="srch-input" type="text" enterkeyhint="search" spellcheck="false" autocomplete="off" placeholder="Search cars and parts — Forester, WRX, brake pads…" value="${esc(FILTER.q)}">
           <button class="srch-clear" id="srch-clear" aria-label="Clear" style="${FILTER.q?"":"display:none"}">✕</button>
         </div>
         <div class="srch-drop" id="srch-drop" hidden></div>
@@ -576,6 +576,10 @@ function setupLiveSearch(opts){
     }
   });
 
+  drop.addEventListener("wheel", e => {
+    e.stopPropagation();
+  }, { passive: true });
+
   if(clear){
     clear.addEventListener("click", () => {
       input.value = "";
@@ -655,7 +659,7 @@ function viewParts(){
       <div class="srch-wrap" style="margin-bottom:34px">
         <div class="srch-bar">
           <svg class="srch-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.6"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-          <input id="pf-q" class="srch-input" type="search" autocomplete="off" placeholder="Search spares and cars — Brake pads, oil filter, Forester…" value="${esc(PFILTER.q)}">
+          <input id="pf-q" class="srch-input" type="text" enterkeyhint="search" spellcheck="false" autocomplete="off" placeholder="Search spares and cars — Brake pads, oil filter, Forester…" value="${esc(PFILTER.q)}">
           <button class="srch-clear" id="psrch-clear" aria-label="Clear" style="${PFILTER.q?"":"display:none"}">✕</button>
         </div>
         <div class="srch-drop" id="psrch-drop" hidden></div>
