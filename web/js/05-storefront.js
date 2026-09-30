@@ -409,13 +409,6 @@ function opts(values, current, label){
 }
 
 function viewCars(){
-  const all = DB.allCars();
-  const [lo, hi] = priceBounds(all);
-  if(!FILTER.maxPrice) FILTER.maxPrice = hi;
-  if(!FILTER.minPrice) FILTER.minPrice = lo;
-  const uniq = k => [...new Set(all.map(c=>c[k]).filter(Boolean))].sort();
-  const maxMil = Math.max(150000, ...all.map(c=>Number(c.mileage)||0));
-
   return `${navHTML("/cars")}
   <main class="page-top">
     <div class="wrap">
@@ -423,7 +416,7 @@ function viewCars(){
       <h1 class="h-1" style="margin:14px 0 16px" data-split>The Subaru collection</h1>
       <p class="lede" style="margin-bottom:38px">Every vehicle on our floor, priced in Kenyan Shillings.</p>
 
-      <div class="srch-wrap" style="margin-bottom:28px">
+      <div class="srch-wrap" style="margin-bottom:34px">
         <div class="srch-bar">
           <svg class="srch-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.6"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
           <input id="f-q" class="srch-input" type="search" autocomplete="off" placeholder="Search cars and parts — Forester, WRX, brake pads…" value="${esc(FILTER.q)}">
@@ -431,53 +424,6 @@ function viewCars(){
         </div>
         <div class="srch-drop" id="srch-drop" hidden></div>
       </div>
-
-      <details class="srch-adv" id="car-adv" ${Object.values({m:FILTER.model,y:FILTER.year,b:FILTER.body,t:FILTER.transmission,f:FILTER.fuel,e:FILTER.engine,d:FILTER.drive,s:FILTER.minPrice}).some(Boolean)?"open":""}>
-        <summary class="srch-adv-toggle">Advanced filters</summary>
-        <div class="f-grid" style="margin-top:18px">
-          <div class="field"><label for="f-model">Model</label>
-            <select id="f-model">${opts(uniq("model"), FILTER.model, "All models")}</select></div>
-          <div class="field"><label for="f-year">Year</label>
-            <select id="f-year">${opts(uniq("year").sort((a,b)=>b-a), FILTER.year, "Any year")}</select></div>
-          <div class="field"><label for="f-body">Body type</label>
-            <select id="f-body">${opts(uniq("body"), FILTER.body, "Any body")}</select></div>
-          <div class="field"><label for="f-trans">Transmission</label>
-            <select id="f-trans">${opts(uniq("transmission"), FILTER.transmission, "Any transmission")}</select></div>
-          <div class="field"><label for="f-fuel">Fuel</label>
-            <select id="f-fuel">${opts(uniq("fuel"), FILTER.fuel, "Any fuel")}</select></div>
-          <div class="field"><label for="f-engine">Engine</label>
-            <select id="f-engine">${opts(uniq("engine"), FILTER.engine, "Any engine")}</select></div>
-          <div class="field"><label for="f-sort">Sort by</label>
-            <select id="f-sort">
-              <option value="newest" ${FILTER.sort==="newest"?"selected":""}>Newest year</option>
-              <option value="price-asc" ${FILTER.sort==="price-asc"?"selected":""}>Price low to high</option>
-              <option value="price-desc" ${FILTER.sort==="price-desc"?"selected":""}>Price high to low</option>
-              <option value="mileage" ${FILTER.sort==="mileage"?"selected":""}>Lowest mileage</option>
-              <option value="featured" ${FILTER.sort==="featured"?"selected":""}>Featured first</option>
-            </select></div>
-          <div class="field"><label for="f-min">Minimum price</label>
-            <input id="f-min" type="range" min="${lo}" max="${hi}" step="50000" value="${FILTER.minPrice}">
-            <div class="range-out"><span>${ksh(lo)}</span><span id="f-min-out">${ksh(FILTER.minPrice)}</span></div></div>
-          <div class="field"><label for="f-max">Maximum price</label>
-            <input id="f-max" type="range" min="${lo}" max="${hi}" step="50000" value="${FILTER.maxPrice}">
-            <div class="range-out"><span id="f-max-out">${ksh(FILTER.maxPrice)}</span><span>${ksh(hi)}</span></div></div>
-          <div class="field"><label for="f-mil">Maximum mileage</label>
-            <input id="f-mil" type="range" min="0" max="${maxMil}" step="5000" value="${FILTER.maxMileage||maxMil}">
-            <div class="range-out"><span>0 KM</span><span id="f-mil-out">${km(FILTER.maxMileage||maxMil)}</span></div></div>
-        </div>
-        <div class="f-foot">
-          <div class="chip-row">
-            <button class="chip ${FILTER.status==="AVAILABLE"?"on":""}" data-status="AVAILABLE">Available</button>
-            <button class="chip ${FILTER.status==="SOLD"?"on":""}" data-status="SOLD">Sold</button>
-            <button class="chip ${FILTER.status==="ALL"?"on":""}" data-status="ALL">All</button>
-            <button class="chip ${FILTER.drive==="AWD"?"on":""}" id="f-awd">AWD only</button>
-          </div>
-          <div style="display:flex;gap:14px;align-items:center">
-            <span class="count" id="f-count"></span>
-            <button class="mini" id="f-reset">Clear filters</button>
-          </div>
-        </div>
-      </details>
 
       <div class="cards" id="car-grid"></div>
       <div id="car-also-like"></div>
@@ -648,8 +594,6 @@ function setupLiveSearch(opts){
 }
 
 function mountCars(){
-  const on = (sel, ev, fn) => { const el = $(sel); if(el) el.addEventListener(ev, fn); };
-  
   setupLiveSearch({
     inputId: "#f-q",
     dropId: "#srch-drop",
@@ -658,42 +602,6 @@ function mountCars(){
       FILTER.q = q;
       renderGrid();
     }
-  });
-
-  on("#f-model","change", e=>{ FILTER.model = e.target.value; renderGrid(); });
-  on("#f-year","change", e=>{ FILTER.year = e.target.value; renderGrid(); });
-  on("#f-body","change", e=>{ FILTER.body = e.target.value; renderGrid(); });
-  on("#f-trans","change", e=>{ FILTER.transmission = e.target.value; renderGrid(); });
-  on("#f-fuel","change", e=>{ FILTER.fuel = e.target.value; renderGrid(); });
-  on("#f-engine","change", e=>{ FILTER.engine = e.target.value; renderGrid(); });
-  on("#f-sort","change", e=>{ FILTER.sort = e.target.value; renderGrid(); });
-  on("#f-min","input", e=>{
-    FILTER.minPrice = Number(e.target.value);
-    if(FILTER.minPrice > FILTER.maxPrice){ FILTER.maxPrice = FILTER.minPrice; $("#f-max").value = FILTER.maxPrice; $("#f-max-out").textContent = ksh(FILTER.maxPrice); }
-    $("#f-min-out").textContent = ksh(FILTER.minPrice); renderGrid();
-  });
-  on("#f-max","input", e=>{
-    FILTER.maxPrice = Number(e.target.value);
-    if(FILTER.maxPrice < FILTER.minPrice){ FILTER.minPrice = FILTER.maxPrice; $("#f-min").value = FILTER.minPrice; $("#f-min-out").textContent = ksh(FILTER.minPrice); }
-    $("#f-max-out").textContent = ksh(FILTER.maxPrice); renderGrid();
-  });
-  on("#f-mil","input", e=>{
-    FILTER.maxMileage = Number(e.target.value);
-    $("#f-mil-out").textContent = km(FILTER.maxMileage); renderGrid();
-  });
-  $$("[data-status]").forEach(b=>b.addEventListener("click", ()=>{
-    FILTER.status = b.dataset.status;
-    $$("[data-status]").forEach(x=>x.classList.toggle("on", x.dataset.status === FILTER.status));
-    renderGrid();
-  }));
-  on("#f-awd","click", e=>{
-    FILTER.drive = FILTER.drive === "AWD" ? "" : "AWD";
-    e.target.classList.toggle("on", FILTER.drive === "AWD"); renderGrid();
-  });
-  on("#f-reset","click", ()=>{
-    Object.assign(FILTER, {model:"",year:"",body:"",transmission:"",fuel:"",engine:"",drive:"",
-      status:"AVAILABLE",minPrice:0,maxPrice:0,maxMileage:0,sort:"newest",q:""});
-    render();
   });
   renderGrid();
 }
@@ -737,10 +645,6 @@ function applyPartFilters(){
 }
 
 function viewParts(){
-  const all = DB.activeParts();
-  const cats = [...new Set(all.map(p=>p.category))].sort();
-  const models = [...new Set(all.flatMap(p=>p.compatible||[]))].sort();
-
   return `${navHTML("/parts")}
   <main class="page-top">
     <div class="wrap">
@@ -748,7 +652,7 @@ function viewParts(){
       <h1 class="h-1" style="margin:14px 0 16px" data-split>Keep it running right</h1>
       <p class="lede" style="margin-bottom:38px">Filters, brakes, suspension and the fluids we use ourselves. Priced in Kenyan Shillings, stock shown honestly.</p>
 
-      <div class="srch-wrap" style="margin-bottom:28px">
+      <div class="srch-wrap" style="margin-bottom:34px">
         <div class="srch-bar">
           <svg class="srch-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.6"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
           <input id="pf-q" class="srch-input" type="search" autocomplete="off" placeholder="Search spares and cars — Brake pads, oil filter, Forester…" value="${esc(PFILTER.q)}">
@@ -756,32 +660,6 @@ function viewParts(){
         </div>
         <div class="srch-drop" id="psrch-drop" hidden></div>
       </div>
-
-      <details class="srch-adv" id="part-adv" ${(PFILTER.category||PFILTER.model||PFILTER.inStockOnly)?"open":""}>
-        <summary class="srch-adv-toggle">Advanced filters</summary>
-        <div class="f-grid" style="margin-top:18px">
-          <div class="field"><label for="pf-cat">Category</label>
-            <select id="pf-cat">${opts(cats, PFILTER.category, "All categories")}</select></div>
-          <div class="field"><label for="pf-model">Fits model</label>
-            <select id="pf-model">${opts(models, PFILTER.model, "Any model")}</select></div>
-          <div class="field"><label for="pf-sort">Sort by</label>
-            <select id="pf-sort">
-              <option value="name" ${PFILTER.sort==="name"?"selected":""}>Name</option>
-              <option value="price-asc" ${PFILTER.sort==="price-asc"?"selected":""}>Price low to high</option>
-              <option value="price-desc" ${PFILTER.sort==="price-desc"?"selected":""}>Price high to low</option>
-              <option value="newest" ${PFILTER.sort==="newest"?"selected":""}>Newest</option>
-            </select></div>
-        </div>
-        <div class="f-foot">
-          <div class="chip-row">
-            <button class="chip ${PFILTER.inStockOnly?"on":""}" id="pf-stock">In stock only</button>
-          </div>
-          <div style="display:flex;gap:14px;align-items:center">
-            <span class="count" id="pf-count"></span>
-            <button class="mini" id="pf-reset">Clear filters</button>
-          </div>
-        </div>
-      </details>
 
       <div class="cards" id="part-grid"></div>
       <div id="part-also-like"></div>
@@ -795,7 +673,7 @@ function renderPartGrid(){
   const list = applyPartFilters();
   const shownIds = new Set(list.map(p=>p.id));
   grid.innerHTML = list.length ? list.map(partCard).join("")
-    : `<div class="empty" style="grid-column:1/-1">No parts match these filters. Try a different search or clear the filters.</div>`;
+    : `<div class="empty" style="grid-column:1/-1">No parts match these filters. Try a different search.</div>`;
   const c = $("#pf-count");
   if(c) c.textContent = `${list.length} part${list.length===1?"":"s"}`;
   revealAll(grid);
@@ -803,8 +681,6 @@ function renderPartGrid(){
 }
 
 function mountParts(){
-  const on = (sel, ev, fn) => { const el = $(sel); if(el) el.addEventListener(ev, fn); };
-
   setupLiveSearch({
     inputId: "#pf-q",
     dropId: "#psrch-drop",
@@ -814,12 +690,6 @@ function mountParts(){
       renderPartGrid();
     }
   });
-
-  on("#pf-cat","change", e=>{ PFILTER.category = e.target.value; renderPartGrid(); });
-  on("#pf-model","change", e=>{ PFILTER.model = e.target.value; renderPartGrid(); });
-  on("#pf-sort","change", e=>{ PFILTER.sort = e.target.value; renderPartGrid(); });
-  on("#pf-stock","click", e=>{ PFILTER.inStockOnly = !PFILTER.inStockOnly; e.target.classList.toggle("on", PFILTER.inStockOnly); renderPartGrid(); });
-  on("#pf-reset","click", ()=>{ Object.assign(PFILTER, {category:"",model:"",inStockOnly:false,q:"",sort:"name"}); render(); });
   renderPartGrid();
 }
 
