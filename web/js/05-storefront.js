@@ -421,12 +421,20 @@ function viewCars(){
     <div class="wrap">
       <span class="tag">Inventory</span>
       <h1 class="h-1" style="margin:14px 0 16px" data-split>The Subaru collection</h1>
-      <p class="lede" style="margin-bottom:38px">Every vehicle on our floor, priced in Kenyan Shillings. Filter by what matters to you.</p>
+      <p class="lede" style="margin-bottom:38px">Every vehicle on our floor, priced in Kenyan Shillings.</p>
 
-      <div class="filters">
-        <div class="f-grid">
-          <div class="field"><label for="f-q">Search</label>
-            <input id="f-q" type="search" placeholder="Forester, WRX, turbo…" value="${esc(FILTER.q)}"></div>
+      <div class="srch-wrap" style="margin-bottom:28px">
+        <div class="srch-bar">
+          <svg class="srch-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.6"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <input id="f-q" class="srch-input" type="search" autocomplete="off" placeholder="Search cars and parts — Forester, WRX, brake pads…" value="${esc(FILTER.q)}">
+          <button class="srch-clear" id="srch-clear" aria-label="Clear" style="${FILTER.q?"":"display:none"}">✕</button>
+        </div>
+        <div class="srch-drop" id="srch-drop" hidden></div>
+      </div>
+
+      <details class="srch-adv" id="car-adv" ${Object.values({m:FILTER.model,y:FILTER.year,b:FILTER.body,t:FILTER.transmission,f:FILTER.fuel,e:FILTER.engine,d:FILTER.drive,s:FILTER.minPrice}).some(Boolean)?"open":""}>
+        <summary class="srch-adv-toggle">Advanced filters</summary>
+        <div class="f-grid" style="margin-top:18px">
           <div class="field"><label for="f-model">Model</label>
             <select id="f-model">${opts(uniq("model"), FILTER.model, "All models")}</select></div>
           <div class="field"><label for="f-year">Year</label>
@@ -469,9 +477,10 @@ function viewCars(){
             <button class="mini" id="f-reset">Clear filters</button>
           </div>
         </div>
-      </div>
+      </details>
 
       <div class="cards" id="car-grid"></div>
+      <div id="car-also-like"></div>
       <div style="height:clamp(60px,9vw,120px)"></div>
     </div>
   </main>${footHTML()}`;
@@ -480,16 +489,177 @@ function viewCars(){
 function renderGrid(){
   const grid = $("#car-grid"); if(!grid) return;
   const list = applyFilters();
+  const shownIds = new Set(list.map(c=>c.id));
   grid.innerHTML = list.length ? list.map(carCard).join("")
-    : `<div class="empty" style="grid-column:1/-1">No Subaru matches these filters. Widen the price range or clear the filters to see the whole collection.</div>`;
+    : `<div class="empty" style="grid-column:1/-1">No Subaru matches these filters. Try a different search or clear the filters to see the whole collection.</div>`;
   const c = $("#f-count");
   if(c) c.textContent = `${list.length} vehicle${list.length===1?"":"s"}`;
   revealAll(grid);
+  youMayAlsoLike("car-also-like", shownIds, "cars");
+}
+
+function youMayAlsoLike(targetId, shownIds, currentType){
+  const container = $(typeof targetId === "string" ? (targetId.startsWith("#") ? targetId : "#" + targetId) : targetId);
+  if(!container) return;
+
+  const shown = shownIds instanceof Set ? shownIds : new Set(shownIds || []);
+
+  // Pick up to 2 cars not already shown
+  let recCars = DB.available().filter(c => !shown.has(c.id)).slice(0, 2);
+  if(recCars.length < 2){
+    const more = DB.allCars().filter(c => !shown.has(c.id) && !recCars.some(rc=>rc.id===c.id)).slice(0, 2 - recCars.length);
+    recCars.push(...more);
+  }
+
+  // Pick up to 2 parts not already shown
+  let recParts = DB.activeParts().filter(p => !shown.has(p.id) && (Number(p.stock)||0) > 0).slice(0, 2);
+  if(recParts.length < 2){
+    const more = DB.activeParts().filter(p => !shown.has(p.id) && !recParts.some(rp=>rp.id===p.id)).slice(0, 2 - recParts.length);
+    recParts.push(...more);
+  }
+
+  if(!recCars.length && !recParts.length){
+    container.innerHTML = "";
+    return;
+  }
+
+  container.innerHTML = `
+    <div class="also-like-box">
+      <div class="sec-head" style="margin-bottom:24px">
+        <div>
+          <span class="tag">Recommendations</span>
+          <h2 class="h-2" style="margin-top:8px">You may also like</h2>
+        </div>
+        <div class="count">${recCars.length} vehicle${recCars.length===1?"":"s"} · ${recParts.length} spare${recParts.length===1?"":"s"}</div>
+      </div>
+      <div class="cards">
+        ${recCars.map(carCard).join("")}
+        ${recParts.map(partCard).join("")}
+      </div>
+    </div>`;
+  revealAll(container);
+}
+
+function setupLiveSearch(opts){
+  const input = $(opts.inputId);
+  const drop = $(opts.dropId);
+  const clear = $(opts.clearId);
+  if(!input || !drop) return;
+
+  function closeDrop(){
+    drop.hidden = true;
+    drop.innerHTML = "";
+  }
+
+  function handleSearch(){
+    const q = input.value.trim();
+    if(clear) clear.style.display = q ? "flex" : "none";
+    if(opts.onFilter) opts.onFilter(q);
+
+    if(!q){
+      closeDrop();
+      return;
+    }
+
+    const ql = q.toLowerCase();
+    const matchedCars = DB.allCars().filter(c =>
+      [c.year, c.model, c.variant, c.body, c.engine, c.extColor, c.description].join(" ").toLowerCase().includes(ql)
+    ).slice(0, 4);
+
+    const matchedParts = DB.activeParts().filter(p =>
+      [p.name, p.sku, p.brand, p.category, p.description, ...(p.compatible||[])].join(" ").toLowerCase().includes(ql)
+    ).slice(0, 4);
+
+    if(!matchedCars.length && !matchedParts.length){
+      drop.innerHTML = `<div class="srch-empty">No vehicles or parts found matching "<b>${esc(q)}</b>"</div>`;
+      drop.hidden = false;
+      return;
+    }
+
+    let html = "";
+    if(matchedCars.length){
+      html += `<div class="srch-group-label">Vehicles</div>`;
+      html += matchedCars.map(c => {
+        const isSold = c.status === "SOLD";
+        const badge = isSold ? `<span class="pill pill--bad">Sold</span>` : `<span class="pill pill--ok">Available</span>`;
+        return `
+          <a class="srch-item" href="#/cars/${esc(c.id)}">
+            <span class="srch-tag">CAR</span>
+            <div class="srch-info">
+              <div class="srch-name">${esc(c.year)} Subaru ${esc(c.model)} ${esc(c.variant||"")}</div>
+              <div class="srch-sub">${esc(c.body||"")} · ${km(c.mileage)} · ${esc(c.transmission||"").split(" ")[0]}</div>
+            </div>
+            <div class="srch-right">
+              ${badge}
+              <div class="srch-price num">${ksh(c.price)}</div>
+            </div>
+          </a>`;
+      }).join("");
+    }
+
+    if(matchedParts.length){
+      html += `<div class="srch-group-label">Spares &amp; Parts</div>`;
+      html += matchedParts.map(p => {
+        const st = partStock(p);
+        return `
+          <a class="srch-item" href="#/parts/${esc(p.id)}">
+            <span class="srch-tag srch-tag--part">SPARE</span>
+            <div class="srch-info">
+              <div class="srch-name">${esc(p.name)}</div>
+              <div class="srch-sub">SKU: ${esc(p.sku)} · ${esc(p.category||"")} · ${esc(p.brand||"Genuine")}</div>
+            </div>
+            <div class="srch-right">
+              <span class="pill ${st.cls}">${st.label}</span>
+              <div class="srch-price num">${ksh(p.price)}</div>
+            </div>
+          </a>`;
+      }).join("");
+    }
+
+    drop.innerHTML = html;
+    drop.hidden = false;
+  }
+
+  input.addEventListener("input", handleSearch);
+  input.addEventListener("focus", () => {
+    if(input.value.trim().length >= 1) handleSearch();
+  });
+  input.addEventListener("keydown", e => {
+    if(e.key === "Escape"){
+      closeDrop();
+    }
+  });
+
+  if(clear){
+    clear.addEventListener("click", () => {
+      input.value = "";
+      clear.style.display = "none";
+      closeDrop();
+      if(opts.onFilter) opts.onFilter("");
+      input.focus();
+    });
+  }
+
+  document.addEventListener("click", e => {
+    if(!input.contains(e.target) && !drop.contains(e.target) && (!clear || !clear.contains(e.target))){
+      closeDrop();
+    }
+  });
 }
 
 function mountCars(){
   const on = (sel, ev, fn) => { const el = $(sel); if(el) el.addEventListener(ev, fn); };
-  on("#f-q","input", e=>{ FILTER.q = e.target.value.trim(); renderGrid(); });
+  
+  setupLiveSearch({
+    inputId: "#f-q",
+    dropId: "#srch-drop",
+    clearId: "#srch-clear",
+    onFilter: (q) => {
+      FILTER.q = q;
+      renderGrid();
+    }
+  });
+
   on("#f-model","change", e=>{ FILTER.model = e.target.value; renderGrid(); });
   on("#f-year","change", e=>{ FILTER.year = e.target.value; renderGrid(); });
   on("#f-body","change", e=>{ FILTER.body = e.target.value; renderGrid(); });
@@ -578,10 +748,18 @@ function viewParts(){
       <h1 class="h-1" style="margin:14px 0 16px" data-split>Keep it running right</h1>
       <p class="lede" style="margin-bottom:38px">Filters, brakes, suspension and the fluids we use ourselves. Priced in Kenyan Shillings, stock shown honestly.</p>
 
-      <div class="filters">
-        <div class="f-grid">
-          <div class="field"><label for="pf-q">Search</label>
-            <input id="pf-q" type="search" placeholder="Brake pads, oil filter…" value="${esc(PFILTER.q)}"></div>
+      <div class="srch-wrap" style="margin-bottom:28px">
+        <div class="srch-bar">
+          <svg class="srch-icon" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5" stroke="currentColor" stroke-width="1.6"/><path d="M13.5 13.5L17 17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <input id="pf-q" class="srch-input" type="search" autocomplete="off" placeholder="Search spares and cars — Brake pads, oil filter, Forester…" value="${esc(PFILTER.q)}">
+          <button class="srch-clear" id="psrch-clear" aria-label="Clear" style="${PFILTER.q?"":"display:none"}">✕</button>
+        </div>
+        <div class="srch-drop" id="psrch-drop" hidden></div>
+      </div>
+
+      <details class="srch-adv" id="part-adv" ${(PFILTER.category||PFILTER.model||PFILTER.inStockOnly)?"open":""}>
+        <summary class="srch-adv-toggle">Advanced filters</summary>
+        <div class="f-grid" style="margin-top:18px">
           <div class="field"><label for="pf-cat">Category</label>
             <select id="pf-cat">${opts(cats, PFILTER.category, "All categories")}</select></div>
           <div class="field"><label for="pf-model">Fits model</label>
@@ -603,9 +781,10 @@ function viewParts(){
             <button class="mini" id="pf-reset">Clear filters</button>
           </div>
         </div>
-      </div>
+      </details>
 
       <div class="cards" id="part-grid"></div>
+      <div id="part-also-like"></div>
       <div style="height:clamp(60px,9vw,120px)"></div>
     </div>
   </main>${footHTML()}`;
@@ -614,16 +793,28 @@ function viewParts(){
 function renderPartGrid(){
   const grid = $("#part-grid"); if(!grid) return;
   const list = applyPartFilters();
+  const shownIds = new Set(list.map(p=>p.id));
   grid.innerHTML = list.length ? list.map(partCard).join("")
-    : `<div class="empty" style="grid-column:1/-1">No parts match these filters.</div>`;
+    : `<div class="empty" style="grid-column:1/-1">No parts match these filters. Try a different search or clear the filters.</div>`;
   const c = $("#pf-count");
   if(c) c.textContent = `${list.length} part${list.length===1?"":"s"}`;
   revealAll(grid);
+  youMayAlsoLike("part-also-like", shownIds, "parts");
 }
 
 function mountParts(){
   const on = (sel, ev, fn) => { const el = $(sel); if(el) el.addEventListener(ev, fn); };
-  on("#pf-q","input", e=>{ PFILTER.q = e.target.value.trim(); renderPartGrid(); });
+
+  setupLiveSearch({
+    inputId: "#pf-q",
+    dropId: "#psrch-drop",
+    clearId: "#psrch-clear",
+    onFilter: (q) => {
+      PFILTER.q = q;
+      renderPartGrid();
+    }
+  });
+
   on("#pf-cat","change", e=>{ PFILTER.category = e.target.value; renderPartGrid(); });
   on("#pf-model","change", e=>{ PFILTER.model = e.target.value; renderPartGrid(); });
   on("#pf-sort","change", e=>{ PFILTER.sort = e.target.value; renderPartGrid(); });
