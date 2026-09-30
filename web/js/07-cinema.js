@@ -423,22 +423,47 @@ function runPreloader(){
 
 /* --- per-section wiring, called after each render --- */
 function mountCinema(){
-  // hero depth planes with mouse 3D perspective
+  // hero — depth planes + volumetric rays + embers
   $$(".cine").forEach(stage => {
-    const planes = $$(".plane", stage), copy = $(".cine-copy", stage), cue = $(".cue", stage);
+    const planes   = $$(".plane",     stage);
+    const beams    = $$(".ray-beam",  stage);
+    const raysWrap = $(".hero-rays",  stage);
+    const copy     = $(".cine-copy",  stage);
+    const cue      = $(".cue",        stage);
+
     FX.add(stage, (r, vh) => {
-      const p = stageP(r, vh);
-      const rotY = CUR ? (CUR.nx * 2.8).toFixed(2) : "0";
-      const rotX = CUR ? (-CUR.ny * 2.0).toFixed(2) : "0";
+      const p    = stageP(r, vh);
+      const nx   = CUR ? CUR.nx : 0;   // -1 … +1 normalised cursor X
+      const ny   = CUR ? CUR.ny : 0;   // -1 … +1 normalised cursor Y
+      const rotY = (nx * 2.8).toFixed(2);
+      const rotX = (-ny * 2.0).toFixed(2);
+
+      // 3-plane depth parallax with gyroscopic tilt
       planes.forEach(pl => {
         const d = parseFloat(pl.dataset.depth || 0.2);
-        pl.style.transform = `translate3d(0,${(-p * vh * d * 0.85).toFixed(1)}px,0) rotateY(${rotY}deg) rotateX(${rotX}deg) scale(${(1 + p * d * 0.22).toFixed(4)})`;
+        pl.style.transform = `translate3d(${(nx * d * 18).toFixed(1)}px,${(-p * vh * d * 0.85 + ny * d * 12).toFixed(1)}px,0) rotateY(${rotY}deg) rotateX(${rotX}deg) scale(${(1 + p * d * 0.22).toFixed(4)})`;
       });
+
+      // Volumetric ray canopy — cursor sway + scroll fade
+      if(raysWrap){
+        const rayOpacity = clamp(0.82 - p * 1.6, 0, 0.82);
+        raysWrap.style.opacity = rayOpacity.toFixed(3);
+      }
+      beams.forEach((beam, i) => {
+        // Each beam gets its own spin so they splay naturally
+        const baseRot  = parseFloat(beam.style.transform.match(/rotate\(([^)]+)deg\)/)?.[1] || "0");
+        const sway     = (nx * (i % 2 === 0 ? 4.5 : -3.8)).toFixed(2);
+        beam.style.transform = `rotate(${(baseRot + parseFloat(sway)).toFixed(2)}deg)`;
+        beam.style.opacity   = clamp(0.35 + nx * (i % 2 === 0 ? 0.18 : -0.12), 0.1, 0.7).toFixed(3);
+      });
+
+      // Copy drift + fade
       if(copy){
         copy.style.transform = `translate3d(0,${(-p * 180).toFixed(1)}px,0)`;
-        copy.style.opacity = String(clamp(1 - p * 1.9, 0, 1));
+        copy.style.opacity   = String(clamp(1 - p * 1.9, 0, 1));
       }
       if(cue) cue.style.opacity = String(clamp(1 - p * 4, 0, 1));
+
       return p > 0.02 && p < 0.99 ? "scope" : null;
     });
   });

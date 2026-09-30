@@ -426,25 +426,57 @@ function viewHome(){
   <main>
 
     <!-- ================= HERO ================= -->
-    <section class="cine">
+    <section class="cine" aria-label="Sheriff Motors Hero">
       <div class="cine-pin">
-        <div class="planes"><div class="plane" data-depth="0.32">${homePhoto(HOME_PHOTOS.hero, "", true)}</div></div>
-        <div class="cine-scrim"></div>
-        <div class="cine-copy">
-          <div class="live-pill fade-up"><span class="beacon"></span><span>Live Showroom · Nairobi, Kenya</span></div>
-          <h1 class="h-hero" data-split data-stagger="0.085">${esc(s.heroTitle)}</h1>
-          <p class="lede fade-up" style="margin:24px 0 32px">${esc(s.heroSub)}</p>
-          <div class="btn-row fade-up">
-            <a class="btn btn--solid" href="#/cars">Explore Subaru <span class="btn-arrow">→</span></a>
-            <a class="btn" href="#/sold">View collection <span class="btn-arrow">→</span></a>
-          </div>
-          <div class="cine-stat">
-            <div><b class="num" data-count="${avail.length}">0</b><span>Available now</span></div>
-            <div><b class="num" data-count="${DB.sold().length}">0</b><span>Found owners</span></div>
-            <div><b class="num" data-count="${Math.round(lowest/1000)}" data-prefix="KSh " data-suffix=",000">KSh 0</b><span>From</span></div>
+        <!-- Volumetric Lighting Canopy -->
+        <div class="hero-rays" aria-hidden="true">
+          <div class="ray-beam" style="left:24%;transform:rotate(-18deg)"></div>
+          <div class="ray-beam" style="left:38%;transform:rotate(-8deg)"></div>
+          <div class="ray-beam center" style="left:52%;transform:rotate(4deg)"></div>
+          <div class="ray-beam" style="left:68%;transform:rotate(16deg)"></div>
+          <div class="ray-beam" style="left:82%;transform:rotate(26deg)"></div>
+          <div class="ray-glow"></div>
+        </div>
+
+        <!-- 3-Plane 3D Parallax Rig -->
+        <div class="planes">
+          <!-- Plane 1: Deep Horizon Atmosphere -->
+          <div class="plane plane--bg" data-depth="0.16">${homePhoto(HOME_PHOTOS.hero, "", true)}</div>
+          <!-- Plane 2: Floating Atmospheric Embers & Gold Dust -->
+          <div class="plane plane--dust" data-depth="0.75">
+            <div class="hero-dust-particles">
+              ${Array.from({length: 12}).map((_, i) => {
+                const top = (Math.sin(i * 4.3 + 1) * 35 + 40).toFixed(1);
+                const left = (Math.cos(i * 3.7 + 2) * 45 + 50).toFixed(1);
+                const s = (2.2 + (i % 3) * 1.6).toFixed(1);
+                const dur = (3.4 + (i % 4) * 1.1).toFixed(1);
+                return `<div class="hero-ember" style="top:${top}%;left:${left}%;width:${s}px;height:${s}px;animation-duration:${dur}s"></div>`;
+              }).join("")}
+            </div>
           </div>
         </div>
-        <span class="cue">Scroll</span>
+
+        <div class="cine-scrim"></div>
+
+        <div class="cine-copy">
+          <div class="hero-hud-row fade-up">
+            <div class="live-pill"><span class="beacon"></span><span>Live Showroom · Nairobi, Kenya</span></div>
+            <div class="hud-chip" style="border-radius:999px"><b>SYMMETRICAL AWD</b><span>ACTIVE</span></div>
+          </div>
+          <h1 class="h-hero" data-split data-stagger="0.08">${esc(s.heroTitle || "Crafted For The Uncharted")}</h1>
+          <p class="lede fade-up" style="margin:20px 0 28px;max-width:48ch">${esc(s.heroSub)}</p>
+          <div class="btn-row fade-up">
+            <a class="btn btn--solid btn--shiny" href="#/cars">Explore Subaru Collection <span class="btn-arrow">→</span></a>
+            <a class="btn" href="#/sold">View Sold Archive <span class="btn-arrow">→</span></a>
+          </div>
+          <div class="cine-stat">
+            <div><b class="num" data-count="${avail.length}">0</b><span>Available in Kenya</span></div>
+            <div><b class="num" data-count="${DB.sold().length}">0</b><span>Found owners</span></div>
+            <div><b class="num" data-count="${Math.round(lowest/1000)}" data-prefix="KSh " data-suffix=",000">KSh 0</b><span>Starting From</span></div>
+          </div>
+        </div>
+
+        <span class="cue">Scroll To Explore</span>
       </div>
     </section>
 
