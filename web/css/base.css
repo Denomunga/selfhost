@@ -81,22 +81,69 @@ p{margin:0 0 1em}
 .sec-head .lede{margin:14px 0 0}
 
 /* ---- buttons ---- */
-.btn{display:inline-flex;align-items:center;gap:.7em;font-family:var(--display);
-  font-size:.78rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
-  padding:15px 28px;border:1px solid var(--rule-strong);background:transparent;color:var(--white);
-  cursor:pointer;transition:background .35s ease,color .35s ease,border-color .35s ease,transform .2s ease;
+.btn{position:relative;display:inline-flex;align-items:center;gap:.75em;font-family:var(--display);
+  font-size:.76rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  padding:15px 30px;border-radius:4px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.18);background:rgba(255,255,255,.03);color:var(--white);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  cursor:pointer;transition:background .3s ease,color .3s ease,border-color .3s ease,transform .2s ease,box-shadow .3s ease;
   font-stretch:100%;line-height:1;text-align:center;justify-content:center}
-.btn:hover{background:var(--white);color:var(--ink);border-color:var(--white);transform:translateY(-2px)}
-.btn--solid{background:linear-gradient(135deg, var(--brass) 0%, #D4A75A 50%, var(--brass-dim) 100%);
-  border-color:var(--brass);color:#120E04;box-shadow:0 4px 15px rgba(200,162,83,0.3)}
-.btn--solid:hover{background:linear-gradient(135deg, #D4A75A 0%, #E8B86A 50%, var(--brass) 100%);
-  border-color:#E8B86A;color:#0A0803;transform:translateY(-2px);box-shadow:0 6px 20px rgba(200,162,83,0.4)}
-.btn--wa{background:#1e7a4d;border-color:#1e7a4d;color:#fff}
-.btn--wa:hover{background:#22935b;border-color:#22935b;color:#fff}
-.btn--sm{padding:10px 16px;font-size:.68rem;letter-spacing:.12em}
+.btn .btn-arrow{display:inline-block;transition:transform .3s cubic-bezier(.2,.7,.2,1)}
+.btn:hover{background:rgba(255,255,255,.09);border-color:rgba(200,162,83,.55);color:var(--white);
+  transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.45)}
+.btn:hover .btn-arrow{transform:translateX(5px)}
+.btn:active{transform:translateY(1px) scale(.985);box-shadow:0 2px 8px rgba(0,0,0,.3)}
+
+.btn--solid{background:linear-gradient(135deg, #DFB76C 0%, #C8A253 45%, #9E7D37 100%);
+  border-color:#DFB76C;color:#0D0A03;box-shadow:0 6px 20px rgba(200,162,83,.32);font-weight:800}
+.btn--solid::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.35),transparent);
+  transform:translateX(-100%) skewX(-20deg);transition:transform .65s ease}
+.btn--solid:hover{background:linear-gradient(135deg, #EAC37D 0%, #D4AE5E 45%, #B08B3E 100%);
+  border-color:#F5D491;color:#070501;transform:translateY(-2px);box-shadow:0 8px 28px rgba(200,162,83,.48)}
+.btn--solid:hover::before{transform:translateX(100%) skewX(-20deg)}
+.btn--solid:active{transform:translateY(1px) scale(.985)}
+
+.btn--wa{background:linear-gradient(135deg, #22935B 0%, #176B41 100%);
+  border-color:#29A768;color:#FFFFFF;box-shadow:0 6px 20px rgba(34,147,91,.32)}
+.btn--wa:hover{background:linear-gradient(135deg, #28AA69 0%, #1C824E 100%);
+  border-color:#36C27C;color:#FFFFFF;transform:translateY(-2px);box-shadow:0 8px 26px rgba(34,147,91,.45)}
+.btn--sm{padding:10px 18px;font-size:.68rem;letter-spacing:.14em}
 .btn--ghost{border-color:var(--rule)}
 .btn[disabled]{opacity:.45;pointer-events:none}
 .btn-row{display:flex;flex-wrap:wrap;gap:14px}
+
+/* Luxury typography accents */
+.gold{background:linear-gradient(135deg, #FFFFFF 20%, #C8A253 90%);background-clip:text; -webkit-background-clip:text; -webkit-text-fill-color:transparent; display:inline-block}
+
+/* Quick model filter ribbon */
+.model-chips{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:26px}
+.model-chip{padding:6px 14px;border-radius:999px;background:rgba(22,28,36,.65);border:1px solid rgba(255,255,255,.09);
+  font-family:var(--display);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--chalk);
+  transition:all .25s ease;display:inline-flex;align-items:center;gap:6px}
+.model-chip:hover{border-color:var(--brass);color:var(--white);background:rgba(200,162,83,.12);transform:translateY(-2px)}
+.model-chip b{color:var(--brass);font-weight:700}
+
+/* Parts category chips */
+.cat-chips{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 24px}
+.cat-chip{padding:5px 12px;border-radius:4px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);
+  font-family:var(--display);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--mist);
+  transition:all .2s ease}
+.cat-chip:hover{border-color:rgba(200,162,83,.4);color:var(--white)}
+
+/* Viewfinder corner brackets for featured vehicle */
+.viewfinder{position:relative}
+.viewfinder::before,.viewfinder::after{content:"";position:absolute;width:18px;height:18px;pointer-events:none;z-index:15}
+.viewfinder::before{top:12px;left:12px;border-top:2px solid var(--brass);border-left:2px solid var(--brass)}
+.viewfinder::after{bottom:12px;right:12px;border-bottom:2px solid var(--brass);border-right:2px solid var(--brass)}
+
+/* Engineering inspection pillars for about section */
+.pillar-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px;margin-top:28px}
+.pillar-card{background:rgba(5,7,10,.55);border:1px solid rgba(255,255,255,.08);padding:18px 20px;border-radius:8px;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:border-color .3s}
+.pillar-card:hover{border-color:rgba(200,162,83,.35)}
+.pillar-num{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:.7rem;color:var(--brass);letter-spacing:.16em;margin-bottom:6px}
+.pillar-ttl{font-family:var(--display);font-size:.92rem;font-weight:700;color:var(--white);text-transform:uppercase;letter-spacing:.04em}
+.pillar-sub{font-size:.78rem;color:var(--mist);margin:6px 0 0;line-height:1.55}
 
 /* ---- top navigation ---- */
 .nav{position:fixed;top:0;left:0;right:0;z-index:80;

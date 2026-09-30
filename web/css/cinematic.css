@@ -218,14 +218,16 @@ body.has-cursor.cur-hot .cur{width:74px;height:74px;margin:-37px 0 0 -37px;backg
   max-width:var(--maxw);margin:0 auto;pointer-events:none}
 
 /* ---- marquee ---- */
-.marq{overflow:hidden;border-block:1px solid var(--rule);padding-block:clamp(16px,2.4vw,30px);
-  background:var(--charcoal)}
+.marq{overflow:hidden;border-block:1px solid rgba(200,162,83,.25);padding-block:clamp(18px,2.6vw,32px);
+  background:linear-gradient(90deg, rgba(13,17,23,.95), rgba(22,28,36,.95), rgba(13,17,23,.95));position:relative}
+.marq::before{content:"";position:absolute;inset:0;opacity:.05;pointer-events:none;
+  background-image:repeating-linear-gradient(45deg, var(--white) 0, var(--white) 1px, transparent 0, transparent 16px)}
 .marq-in{display:flex;gap:clamp(24px,4vw,70px);width:max-content;will-change:transform;align-items:center}
 .marq-in span{font-family:var(--display);font-size:clamp(1.6rem,4.6vw,3.4rem);font-weight:800;
-  font-stretch:120%;text-transform:uppercase;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.3);
+  font-stretch:120%;text-transform:uppercase;color:transparent;-webkit-text-stroke:1px rgba(255,255,255,.28);
   letter-spacing:-.01em;white-space:nowrap}
 .marq-in span.solid{color:var(--white);-webkit-text-stroke:0}
-.marq-in i{width:7px;height:7px;background:var(--brass);flex:0 0 auto;transform:rotate(45deg)}
+.marq-in i{width:8px;height:8px;background:var(--brass);box-shadow:0 0 10px rgba(200,162,83,.7);flex:0 0 auto;transform:rotate(45deg)}
 
 /* ---- closing frame ---- */
 .outro{position:relative;height:150vh}

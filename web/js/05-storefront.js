@@ -195,8 +195,8 @@ function viewHome(){
           <h1 class="h-hero" data-split data-stagger="0.085">${esc(s.heroTitle)}</h1>
           <p class="lede fade-up" style="margin:24px 0 32px">${esc(s.heroSub)}</p>
           <div class="btn-row fade-up">
-            <a class="btn btn--solid" href="#/cars">Explore Subaru</a>
-            <a class="btn" href="#/sold">View collection</a>
+            <a class="btn btn--solid" href="#/cars">Explore Subaru <span class="btn-arrow">→</span></a>
+            <a class="btn" href="#/sold">View collection <span class="btn-arrow">→</span></a>
           </div>
           <div class="cine-stat">
             <div><b class="num" data-count="${avail.length}">0</b><span>Available now</span></div>
@@ -214,13 +214,13 @@ function viewHome(){
     ${feat?`
     <section class="stage">
       <div class="stage-pin">
-        <div class="shot" style="width:38vw;height:42svh">
+        <div class="shot viewfinder" style="width:38vw;height:42svh">
           ${media(coverOf(feat), `${feat.year} Subaru ${feat.model}`, feat.body, feat.id)}
           <div class="shot-scrim"></div>
           <div class="shot-cap">
             <div style="max-width:var(--maxw);margin:0 auto">
-              <span class="tag">Featured</span>
-              <h2 class="h-1" style="margin:12px 0 0">${esc(feat.model)} ${esc(feat.variant||"")}</h2>
+              <span class="tag">Chassis Dossier · Featured</span>
+              <h2 class="h-1" style="margin:12px 0 0">${esc(feat.model)} <span class="gold">${esc(feat.variant||"")}</span></h2>
               <dl class="shot-meta">
                 <div><dt>Year</dt><dd>${esc(feat.year)}</dd></div>
                 <div><dt>Price</dt><dd>${ksh(feat.price)}</dd></div>
@@ -228,8 +228,8 @@ function viewHome(){
                 <div><dt>Drive</dt><dd>${esc((feat.drive||"").indexOf("Symmetrical")===0?"AWD":(feat.drive||"—"))}</dd></div>
               </dl>
               <div class="btn-row" style="margin-top:28px">
-                <a class="btn btn--solid" href="#/cars/${esc(feat.id)}">View vehicle</a>
-                <a class="btn btn--wa" href="${waLink(feat)}" target="_blank" rel="noopener">Chat on WhatsApp</a>
+                <a class="btn btn--solid" href="#/cars/${esc(feat.id)}">View vehicle <span class="btn-arrow">→</span></a>
+                <a class="btn btn--wa" href="${waLink(feat)}" target="_blank" rel="noopener">Chat on WhatsApp <span class="btn-arrow">→</span></a>
               </div>
             </div>
           </div>
@@ -241,11 +241,15 @@ function viewHome(){
 
     <!-- ========== COUNTER-RUNNING RAILS ========== -->
     <section class="rails">
+      ${models.length?`
+      <div class="wrap model-chips fade-up">
+        ${models.map(x=>`<a class="model-chip" href="#/cars?model=${encodeURIComponent(x.m)}">${esc(x.m)} <b>(${x.n})</b></a>`).join("")}
+      </div>`:""}
       <div class="rail" data-dir="1"  data-span="340">${railOf(0)}</div>
       <div class="rail" data-dir="-1" data-span="420" style="margin-left:-12vw">${railOf(3)}</div>
       <div class="rail" data-dir="1"  data-span="260">${railOf(5)}</div>
       <div class="wrap" style="text-align:center;margin-top:clamp(34px,5vw,62px)">
-        <a class="btn btn--solid fade-up" href="#/cars">All ${avail.length} vehicles</a>
+        <a class="btn btn--solid fade-up" href="#/cars">All ${avail.length} vehicles <span class="btn-arrow">→</span></a>
       </div>
     </section>
 
@@ -263,8 +267,8 @@ function viewHome(){
       <div class="wrap">
         <div class="sec-head">
           <div><span class="tag">By model</span>
-            <h2 class="h-1" style="margin-top:12px" data-split>Choose your Subaru</h2></div>
-          <a class="btn btn--sm fade-up" href="#/cars">Browse everything</a>
+            <h2 class="h-1" style="margin-top:12px" data-split>Choose your <span class="gold">Subaru</span></h2></div>
+          <a class="btn btn--sm fade-up" href="#/cars">Browse everything <span class="btn-arrow">→</span></a>
         </div>
         <div class="tgrid">
           ${models.map(x=>`<a class="tile" href="#/cars?model=${encodeURIComponent(x.m)}">
@@ -281,9 +285,16 @@ function viewHome(){
       <div class="wrap">
         <div class="sec-head">
           <div><span class="tag">Genuine parts</span>
-            <h2 class="h-1" style="margin-top:12px" data-split>Keep it running right</h2>
-            <p class="lede">Filters, brakes, fluids and the parts we stock ourselves — same Kenyan Shilling pricing, same honesty about condition.</p></div>
-          <a class="btn btn--sm fade-up" href="#/parts">Shop all parts</a>
+            <h2 class="h-1" style="margin-top:12px" data-split>Keep it <span class="gold">running right</span></h2>
+            <p class="lede">Filters, brakes, fluids and the parts we stock ourselves — same Kenyan Shilling pricing, same honesty about condition.</p>
+            <div class="cat-chips">
+              <span class="cat-chip">Filters & Fluids</span>
+              <span class="cat-chip">Braking Systems</span>
+              <span class="cat-chip">Boxer Engine & Turbo</span>
+              <span class="cat-chip">Suspension & AWD</span>
+            </div>
+          </div>
+          <a class="btn btn--sm fade-up" href="#/parts">Shop all parts <span class="btn-arrow">→</span></a>
         </div>
         <div class="cards">${featParts.map(partCard).join("")}</div>
       </div>
@@ -310,8 +321,8 @@ function viewHome(){
       <div class="wrap">
         <div class="sec-head">
           <div><span class="tag">Recently sold</span>
-            <h2 class="h-1" style="margin-top:12px" data-split>Subaru that found their owners</h2></div>
-          <a class="btn btn--sm fade-up" href="#/sold">View the archive</a>
+            <h2 class="h-1" style="margin-top:12px" data-split>Subaru that <span class="gold">found their owners</span></h2></div>
+          <a class="btn btn--sm fade-up" href="#/sold">View the archive <span class="btn-arrow">→</span></a>
         </div>
         <div class="cards">${sold.map(carCard).join("")}</div>
       </div>
@@ -323,8 +334,8 @@ function viewHome(){
       <div class="wrap">
         <div class="sec-head">
           <div><span class="tag">The Journal</span>
-            <h2 class="h-1" style="margin-top:12px" data-split>Stories from the road</h2></div>
-          <a class="btn btn--sm fade-up" href="#/stories">Read the Journal</a>
+            <h2 class="h-1" style="margin-top:12px" data-split>Stories <span class="gold">from the road</span></h2></div>
+          <a class="btn btn--sm fade-up" href="#/stories">Read the Journal <span class="btn-arrow">→</span></a>
         </div>
         <div class="cards">${stories.map(storyCard).join("")}</div>
       </div>
@@ -335,10 +346,27 @@ function viewHome(){
       <div class="wrap split">
         <div>
           <span class="tag fade-up">The dealership</span>
-          <h2 class="h-1" style="margin:14px 0 20px" data-split>One make, done properly</h2>
+          <h2 class="h-1" style="margin:14px 0 20px" data-split>One make, <span class="gold">done properly</span></h2>
           <p class="lede fade-up">${esc(s.aboutLead)}</p>
           <p class="lede fade-up">Every car goes on the lift before it reaches this website. Anything that fails never gets listed.</p>
-          <div class="btn-row fade-up"><a class="btn" href="#/about">Our selection process</a></div>
+          <div class="pillar-grid fade-up">
+            <div class="pillar-card">
+              <div class="pillar-num">01 / INSPECTION</div>
+              <div class="pillar-ttl">100-Point Lift Check</div>
+              <p class="pillar-sub">Engine compression, AWD differential, subframe, and turbo tested before arrival.</p>
+            </div>
+            <div class="pillar-card">
+              <div class="pillar-num">02 / VERIFICATION</div>
+              <div class="pillar-ttl">Verified History</div>
+              <p class="pillar-sub">Clean NTSA registration, authentic mileage, zero prior flood or structural trauma.</p>
+            </div>
+            <div class="pillar-card">
+              <div class="pillar-num">03 / SPECIALTY</div>
+              <div class="pillar-ttl">Boxer & AWD Focus</div>
+              <p class="pillar-sub">Specialised technicians dedicated solely to Subaru platforms and genuine spares.</p>
+            </div>
+          </div>
+          <div class="btn-row fade-up" style="margin-top:28px"><a class="btn" href="#/about">Our selection process <span class="btn-arrow">→</span></a></div>
         </div>
         <div class="split-media" data-par="80">${homePhoto(HOME_PHOTOS.about, "")}</div>
       </div>
