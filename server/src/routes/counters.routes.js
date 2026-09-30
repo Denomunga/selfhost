@@ -2,6 +2,7 @@
 const express = require("express");
 const { getDb } = require("../db");
 const { wrap } = require("../middleware/async");
+const { secLog } = require("../middleware/logger");
 
 const router = express.Router();
 
@@ -24,7 +25,9 @@ router.post("/counters/:kind", wrap(async (req, res) => {
       { upsert: true, returnDocument: "after", includeResultMetadata: true }
     );
     const n = result.value.value;
-    res.json({ no: `${prefix}-${year}-${String(n).padStart(5, "0")}` });
+    const docNo = `${prefix}-${year}-${String(n).padStart(5, "0")}`;
+    secLog("DOC_ISSUED", req, { user: req.session.username, type: kind, no: docNo });
+    res.json({ no: docNo });
   } catch (e) {
     console.error("counter failed", kind, e);
     res.status(500).json({ error: "Could not issue a document number." });

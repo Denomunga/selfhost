@@ -9,6 +9,7 @@ const {
 const { requireAuth } = require("../middleware/session");
 const { wrap } = require("../middleware/async");
 const { changed } = require("../events");
+const { secLog } = require("../middleware/logger");
 
 const router = express.Router();
 
@@ -73,13 +74,16 @@ router.post("/login", loginLimiter, express.json(), wrap(async (req, res) => {
       { collation: { locale: "en", strength: 2 } }
     );
     if (!user) {
+      secLog("LOGIN_FAIL", req, { user: login, reason: "not_found" });
       return withFloor(startedAt, () => res.status(401).json({ error: "Username or password is wrong." }));
     }
     const ok = await verifyPassword(password, user.password_hash);
     if (!ok) {
+      secLog("LOGIN_FAIL", req, { user: login, reason: "bad_password" });
       return withFloor(startedAt, () => res.status(401).json({ error: "Username or password is wrong." }));
     }
     if (!user.active) {
+      secLog("LOGIN_BLOCKED", req, { user: login, reason: "account_disabled" });
       return withFloor(startedAt, () => res.status(403).json({ error: "This account has been disabled." }));
     }
     await getDb().collection("auth_users").updateOne({ _id: user._id }, { $set: { last_login: new Date() } });
@@ -88,6 +92,7 @@ router.post("/login", loginLimiter, express.json(), wrap(async (req, res) => {
     changed("users");
     const token = signSession(user);
     setSessionCookie(res, token);
+    secLog("LOGIN_OK", req, { user: user.username, role: user.role });
     await withFloor(startedAt, () => null);
     res.json({
       user: { id: user._id, username: user.username, role: user.role, name: user.name || user.username, mustChange: user.must_change }
@@ -99,6 +104,7 @@ router.post("/login", loginLimiter, express.json(), wrap(async (req, res) => {
 }));
 
 router.post("/logout", (req, res) => {
+  if (req.session) secLog("LOGOUT", req, { user: req.session.username });
   clearSessionCookie(res);
   res.status(204).end();
 });
@@ -144,6 +150,12 @@ router.post("/change-password", requireAuth, passwordLimiter, express.json(), wr
     const freshUser = await getDb().collection("auth_users").findOne({ _id: targetId });
     await mirrorUserDoc(freshUser);
     changed("users");
+    const byAdmin = targetId !== req.session.uid;
+    secLog("PASSWORD_CHANGE", req, {
+      by: req.session.username,
+      target: user.username,
+      ...(byAdmin ? { admin_reset: true } : {})
+    });
     res.status(204).end();
   } catch (e) {
     console.error("change-password failed", e);
@@ -169,6 +181,7 @@ router.post("/users", requireAuth, express.json(), wrap(async (req, res) => {
     await getDb().collection("auth_users").insertOne(user);
     await mirrorUserDoc(user);
     changed("users");
+    secLog("USER_CREATE", req, { by: req.session.username, new_user: user.username, role: user.role });
     res.status(201).json({ id });
   } catch (e) {
     if (e.code === 11000) return res.status(409).json({ error: "That username is taken." });
@@ -199,6 +212,7 @@ router.patch("/users/:id", requireAuth, express.json(), wrap(async (req, res) =>
   const user = await getDb().collection("auth_users").findOne({ _id: req.params.id });
   if (user) await mirrorUserDoc(user);
   changed("users");
+  secLog("USER_PATCH", req, { by: req.session.username, target: user ? user.username : req.params.id, changes: JSON.stringify(changes) });
   res.status(204).end();
 }));
 

@@ -9,6 +9,7 @@ const { rateLimit } = require("express-rate-limit");
 const { connectMongo } = require("./db");
 
 const { attachSession } = require("./middleware/session");
+const { requestLogger } = require("./middleware/logger");
 const { wrap } = require("./middleware/async");
 const authRoutes = require("./routes/auth.routes");
 const collectionsRoutes = require("./routes/collections.routes");
@@ -98,6 +99,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(requestLogger);
 app.use(cookieParser());
 app.use(attachSession);
 
@@ -124,6 +126,24 @@ app.use("/api", countersRoutes);
 app.use("/api", eventsRoutes);
 app.use("/api/uploads", uploadsRouter);
 app.get("/_blob/:id", wrap(blobHandler));
+
+// Lightweight print / download audit trail.
+// The browser fires this before window.print() so staff can't skip it.
+// No DB write — the secLog line in the server log is the record.
+const { secLog } = require("./middleware/logger");
+app.post("/api/print-log", express.json({ limit: "2kb" }), (req, res) => {
+  if (!req.session) return res.status(401).json({ error: "Sign in to continue." });
+  const { docType, docNo, action } = req.body || {};
+  if (docType && docNo) {
+    secLog("PRINT", req, {
+      user: req.session.username,
+      action: action || "print",
+      type: docType,
+      no: docNo
+    });
+  }
+  res.status(204).end();
+});
 
 const PUBLIC_DIR = path.join(__dirname, "..", "..", "public");
 app.use("/public", express.static(PUBLIC_DIR));

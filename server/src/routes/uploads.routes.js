@@ -4,6 +4,7 @@ const multer = require("multer");
 const crypto = require("crypto");
 const { getDb } = require("../db");
 const { createBackend } = require("../storage");
+const { secLog } = require("../middleware/logger");
 
 const ALLOWED_TYPES = new Set(["image/png", "image/jpeg", "image/webp"]);
 const MAX_BYTES = 20 * 1024 * 1024; // 20MB, matches the dashboard's own guidance
@@ -45,17 +46,7 @@ const upload = multer({
 const router = express.Router();
 
 router.post("/", (req, res, next) => {
-  console.log("[UPLOAD] Upload request received");
-  console.log("[UPLOAD] Request session:", req.session);
-  console.log("[UPLOAD] Request cookies:", req.cookies);
-  console.log("[UPLOAD] Request headers:", Object.keys(req.headers));
-  
-  if (!req.session) {
-    console.log("[UPLOAD] No session found, returning 401");
-    return res.status(401).json({ error: "Sign in to continue." });
-  }
-  
-  console.log("[UPLOAD] Session valid, proceeding with upload");
+  if (!req.session) return res.status(401).json({ error: "Sign in to continue." });
   upload.single("file")(req, res, (err) => {
     // The storage step below is async — route its failures into the error
     // middleware instead of leaving a floating rejection.
@@ -87,6 +78,8 @@ async function storeUpload(err, req, res) {
       size_bytes: req.file.size,
       created_at: new Date()
     });
+    const user = req.session ? req.session.username : "unknown";
+    secLog("UPLOAD", req, { user, file: req.file.originalname || id, size: req.file.size, type: req.file.mimetype });
     res.status(201).json({ id });
   } catch (e) {
     console.error("asset store failed", e);

@@ -4,6 +4,7 @@ const { getDb } = require("../db");
 const { canRead, canWrite, ALL_COLLECTIONS } = require("../policy");
 const { wrap } = require("../middleware/async");
 const { changed } = require("../events");
+const { secLog } = require("../middleware/logger");
 
 const router = express.Router();
 
@@ -102,15 +103,8 @@ router.get("/collections/:coll", wrap(async (req, res) => {
 
 router.put("/collections/:coll/:id", express.json({ limit: "2mb" }), wrap(async (req, res) => {
   const { coll, id } = req.params;
-  console.log("[COLLECTIONS] PUT request for collection:", coll, "id:", id);
-  console.log("[COLLECTIONS] Request session:", req.session);
-  console.log("[COLLECTIONS] Can write check:", canWrite(coll, req.session));
-  
   if (!ALL_COLLECTIONS.includes(coll)) return res.status(404).json({ error: "No such collection." });
-  if (!canWrite(coll, req.session)) {
-    console.log("[COLLECTIONS] Permission denied for collection:", coll, "session:", req.session);
-    return res.status(403).json({ error: "You can't save changes here." });
-  }
+  if (!canWrite(coll, req.session)) return res.status(403).json({ error: "You can't save changes here." });
   if (!id || id.length > 200) return res.status(400).json({ error: "Invalid document id." });
   try {
     // The audit trail is append-only: writing an entry that already
@@ -131,9 +125,11 @@ router.put("/collections/:coll/:id", express.json({ limit: "2mb" }), wrap(async 
     );
     changed(coll);
     resetPublicCache();
+    const user = req.session ? req.session.username : "unknown";
+    secLog("SAVE", req, { user, collection: coll, id });
     res.status(204).end();
   } catch (e) {
-    console.error("[COLLECTIONS] write failed", coll, id, e);
+    console.error("collection write failed", coll, id, e);
     res.status(500).json({ error: "Could not save that." });
   }
 }));
@@ -149,6 +145,8 @@ router.delete("/collections/:coll/:id", wrap(async (req, res) => {
     await getDb().collection("documents").deleteOne({ collection: coll, id });
     changed(coll);
     resetPublicCache();
+    const user = req.session ? req.session.username : "unknown";
+    secLog("DELETE", req, { user, collection: coll, id });
     res.status(204).end();
   } catch (e) {
     console.error("collection delete failed", coll, id, e);
@@ -166,6 +164,7 @@ router.put("/settings", express.json({ limit: "1mb" }), wrap(async (req, res) =>
     );
     changed("settings");
     resetPublicCache();
+    secLog("SETTINGS_SAVE", req, { user: req.session.username });
     res.status(204).end();
   } catch (e) {
     console.error("settings write failed", e);

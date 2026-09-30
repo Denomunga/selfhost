@@ -124,7 +124,16 @@ function admPhotos(){
 
 /* ---------- 40. PRINTING ---------- */
 
-function printDoc(html, narrow){
+function printDoc(html, narrow, docMeta){
+  // Fire-and-forget: tell the server this document is being printed.
+  // docMeta = { docType: "invoice"|"receipt", docNo: "INV-2026-00001" }
+  if(docMeta && docMeta.docNo){
+    api("/api/print-log", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ docType: docMeta.docType, docNo: docMeta.docNo, action: "print" })
+    }).catch(()=>{});
+  }
   let area = $("#print-area");
   if(!area){
     area = document.createElement("div");

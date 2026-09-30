@@ -455,7 +455,7 @@ function invoiceDetail(id){
       ${Number(inv.paid)>0?`<button class="mini" data-refund="${esc(inv.id)}">Refund / credit note</button>`:""}
     </div>`, true);
 
-  $("#inv-print").addEventListener("click", ()=>printDoc(invoiceHTML(inv, true)));
+  $("#inv-print").addEventListener("click", ()=>printDoc(invoiceHTML(inv, true), false, {docType:"invoice", docNo:inv.no}));
   wireMoneyButtons();
 }
 
@@ -587,7 +587,7 @@ function receiptDetail(id){
       <button class="btn btn--sm btn--solid" id="rc-print">Print receipt</button>
       <button class="btn btn--sm" id="rc-invoice">Open invoice</button>
     </div>`);
-  $("#rc-print").addEventListener("click", ()=>printDoc(receiptHTML(r, true), true));
+  $("#rc-print").addEventListener("click", ()=>printDoc(receiptHTML(r, true), true, {docType:"receipt", docNo:r.no}));
   $("#rc-invoice").addEventListener("click", ()=>invoiceDetail(r.invoiceId));
 }
 
