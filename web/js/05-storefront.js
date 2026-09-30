@@ -98,23 +98,22 @@ function waLink(item){
 function bookFoldHTML() {
   return `<section class="book-fold" aria-label="Chapter 01 — The Machine">
     <div class="book-fold-pin">
-      <div class="book-cover top">
-        <div class="book-cover-media">
-          ${homePhoto(HOME_PHOTOS.machine, "Subaru Machine Preview")}
-        </div>
-        <div class="book-cover-scrim"></div>
-        <div class="book-cover-badge">
-          <span class="tag">Edition Dossier</span>
-          <span>Vol. 2026 · Nairobi</span>
-        </div>
+      <!-- Full image lives BEHIND the covers — revealed as top cover folds back -->
+      <div class="book-bg">
+        ${homePhoto(HOME_PHOTOS.machine, "Subaru Machine", true)}
+        <div class="book-bg-scrim"></div>
       </div>
+
+      <!-- Seam & kinetic lines -->
       <div class="book-seam"></div>
       <div class="book-lines">
-        <div class="book-line" style="top:42%"></div>
-        <div class="book-line" style="top:46%"></div>
-        <div class="book-line" style="top:54%"></div>
-        <div class="book-line" style="top:58%"></div>
+        <div class="book-line" style="top:20%"></div>
+        <div class="book-line" style="top:32%"></div>
+        <div class="book-line" style="top:68%"></div>
+        <div class="book-line" style="top:80%"></div>
       </div>
+
+      <!-- Label floats up through the seam -->
       <div class="book-label">
         <div class="book-chap-pill">
           <span class="chap-badge">Chapter 01</span>
@@ -127,12 +126,17 @@ function bookFoldHTML() {
           <span class="cue-arrow">↓</span>
         </div>
       </div>
-      <div class="book-cover bottom">
-        <div class="book-cover-media">
-          ${homePhoto(HOME_PHOTOS.machine, "Subaru Chassis View")}
+
+      <!-- Top cover: solid dark panel, folds backward on scroll to reveal image -->
+      <div class="book-cover top">
+        <div class="book-cover-badge">
+          <span class="tag">Edition Dossier</span>
+          <span>Vol. 2026 · Nairobi</span>
         </div>
-        <div class="book-cover-scrim btm"></div>
       </div>
+
+      <!-- Bottom cover: solid dark panel, rotates up into flat view -->
+      <div class="book-cover bottom"></div>
     </div>
   </section>`;
 }
@@ -487,29 +491,39 @@ function viewHome(){
     ${feat?`
     <section class="stage">
       <div class="stage-pin">
-        <div class="shot viewfinder" style="width:38vw;height:42svh">
-          <div class="cockpit-hud">
-            <div class="hud-chip"><b>AWD TORQUE</b><span>60 : 40</span></div>
-            <div class="hud-chip"><b>X-MODE</b><span style="color:#4ADE80">SNOW / DIRT</span></div>
-            <div class="hud-chip"><b>GPS</b><span>NAIROBI 01°17'S</span></div>
-          </div>
-          <div class="hud-target"></div>
-          <div class="tilt-glare"></div>
-          ${media(coverOf(feat), `${feat.year} Subaru ${feat.model}`, feat.body, feat.id)}
-          <div class="shot-scrim"></div>
-          <div class="shot-cap">
-            <div style="max-width:var(--maxw);margin:0 auto">
-              <span class="tag">Chassis Dossier · Featured</span>
-              <h2 class="h-1" style="margin:12px 0 0">${esc(feat.model)} <span class="gold">${esc(feat.variant||"")}</span></h2>
-              <dl class="shot-meta">
-                <div><dt>Year</dt><dd>${esc(feat.year)}</dd></div>
-                <div><dt>Price</dt><dd>${ksh(feat.price)}</dd></div>
-                <div><dt>Odometer</dt><dd>${km(feat.mileage)}</dd></div>
-                <div><dt>Drive</dt><dd>${esc((feat.drive||"").indexOf("Symmetrical")===0?"AWD":(feat.drive||"—"))}</dd></div>
-              </dl>
-              <div class="btn-row" style="margin-top:28px">
-                <a class="btn btn--solid" href="#/cars/${esc(feat.id)}">View vehicle <span class="btn-arrow">→</span></a>
-                <a class="btn btn--wa" href="${waLink(feat)}" target="_blank" rel="noopener">Chat on WhatsApp <span class="btn-arrow">→</span></a>
+        <!-- Title hovers above the tilted frame, fades out as it expands -->
+        <div class="stage-title">
+          <span class="chap-badge" style="display:inline-flex;margin-bottom:12px">Chapter 01 · Featured Chassis</span>
+          <h2 class="h-1">${esc(feat.model)} <span class="gold">${esc(feat.variant||"")}</span></h2>
+          <p class="lede" style="margin:12px auto 0;max-width:42ch;opacity:.75">${esc(feat.year)} · ${ksh(feat.price)}</p>
+        </div>
+
+        <!-- The frame: starts tilted with gold border, unrolls to fullscreen -->
+        <div class="shot">
+          <div class="shot-inner">
+            <div class="cockpit-hud">
+              <div class="hud-chip"><b>AWD TORQUE</b><span>60 : 40</span></div>
+              <div class="hud-chip"><b>X-MODE</b><span style="color:#4ADE80">SNOW / DIRT</span></div>
+              <div class="hud-chip"><b>GPS</b><span>NAIROBI 01°17'S</span></div>
+            </div>
+            <div class="hud-target"></div>
+            <div class="tilt-glare"></div>
+            ${media(coverOf(feat), `${feat.year} Subaru ${feat.model}`, feat.body, feat.id)}
+            <div class="shot-scrim"></div>
+            <div class="shot-cap">
+              <div style="max-width:var(--maxw);margin:0 auto">
+                <span class="tag">Chassis Dossier · Featured</span>
+                <h2 class="h-1" style="margin:12px 0 0">${esc(feat.model)} <span class="gold">${esc(feat.variant||"")}</span></h2>
+                <dl class="shot-meta">
+                  <div><dt>Year</dt><dd>${esc(feat.year)}</dd></div>
+                  <div><dt>Price</dt><dd>${ksh(feat.price)}</dd></div>
+                  <div><dt>Odometer</dt><dd>${km(feat.mileage)}</dd></div>
+                  <div><dt>Drive</dt><dd>${esc((feat.drive||"").indexOf("Symmetrical")===0?"AWD":(feat.drive||"—"))}</dd></div>
+                </dl>
+                <div class="btn-row" style="margin-top:28px">
+                  <a class="btn btn--solid" href="#/cars/${esc(feat.id)}">View vehicle <span class="btn-arrow">→</span></a>
+                  <a class="btn btn--wa" href="${waLink(feat)}" target="_blank" rel="noopener">Chat on WhatsApp <span class="btn-arrow">→</span></a>
+                </div>
               </div>
             </div>
           </div>

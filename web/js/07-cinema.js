@@ -484,11 +484,13 @@ function mountCinema(){
 
   // 3D book / portfolio fold opening (Chapter 01 — The Machine)
   $$(".book-fold").forEach(bf => {
-    const top = $(".book-cover.top", bf);
-    const btm = $(".book-cover.bottom", bf);
-    const seam = $(".book-seam", bf);
+    const top   = $(".book-cover.top", bf);
+    const btm   = $(".book-cover.bottom", bf);
+    const seam  = $(".book-seam", bf);
     const lines = $$(".book-line", bf);
     const label = $(".book-label", bf);
+    const bg    = $(".book-bg",    bf);   // full image layer behind covers
+
     FX.add(bf, (r, vh) => {
       const p = stageP(r, vh);
 
@@ -541,39 +543,84 @@ function mountCinema(){
         btm.style.opacity = String(op.toFixed(2));
       }
 
+      // Background image depth-reveal: scale from 1.05 → 1.0 as covers fold open
+      if(bg){
+        const reveal = clamp((p - 0.08) / 0.6, 0, 1);
+        const sc = lerp(1.05, 1.0, reveal);
+        bg.style.transform = `scale(${sc.toFixed(4)})`;
+      }
+
       return p > 0.04 && p < 0.96 ? "scope" : null;
     });
   });
 
-  // 3D cockpit unroll: frame tilts up from 24deg in 3D perspective and unrolls to fullscreen 100vw x 100svh
+  // FrameToFullscreen: tilted gold-border frame → smooth fullscreen reveal
   $$(".stage").forEach(stage => {
-    const shot = $(".shot", stage), cap = $(".shot-cap", stage), hud = $(".cockpit-hud", stage);
+    const shot      = $(".shot",        stage);
+    const shotInner = $(".shot-inner",  stage);
+    const titleEl   = $(".stage-title", stage);
+    const hud       = $(".cockpit-hud", stage);
+    const cap       = $(".shot-cap",    stage);
+
+    if(!shot) return;
+
+    // Compute card scale ratios on first run (recalculate if needed)
+    let cachedVW = 0, cachedVH = 0, startSX = 1, startSY = 1;
+    function getScales(vw, vh){
+      if(vw === cachedVW && vh === cachedVH) return;
+      cachedVW = vw; cachedVH = vh;
+      const targetW = Math.min(vw * 0.82, 1320);
+      const targetH = Math.min(vh * 0.58, 700);
+      startSX = targetW / vw;
+      startSY = targetH / vh;
+    }
+
     FX.add(stage, (r, vh) => {
-      const p = stageP(r, vh);
-      const e = p < 0.72 ? p / 0.72 : 1;                       // growth finishes early, then holds
-      const ease = 1 - Math.pow(1 - e, 3);
-      if(shot){
-        const w = lerp(38, 100, ease), h = lerp(42, 100, ease);
-        const rotX = lerp(24, 0, ease);
-        const translateY = lerp(40, 0, ease);
-        const radius = lerp(20, 0, ease);
-        shot.style.width = w.toFixed(2) + "vw";
-        shot.style.height = h.toFixed(2) + "svh";
-        shot.style.borderRadius = radius.toFixed(1) + "px";
-        shot.style.transform = `perspective(1600px) rotateX(${rotX.toFixed(2)}deg) translateY(${translateY.toFixed(1)}px)`;
-        shot.style.borderColor = `rgba(255,255,255,${lerp(0.24, 0.02, ease).toFixed(3)})`;
+      const p  = stageP(r, vh);
+      const vw = window.innerWidth || 1280;
+      getScales(vw, vh);
+
+      // Phase 1 (0 → 0.5): frame tilts up + zooms slightly
+      // Phase 3 (0.7 → 1.0): flattens fully to fullscreen
+      const phase1 = clamp(p / 0.5, 0, 1);
+      const phase3 = clamp((p - 0.7) / 0.3, 0, 1);
+      const ease3  = 1 - Math.pow(1 - phase3, 3);   // cubic ease-out
+
+      const rotX   = lerp(lerp(26, 15, phase1), 0, ease3);
+      const scaleX = lerp(lerp(startSX * 0.86, startSX * 0.93, phase1), 1, ease3);
+      const scaleY = lerp(lerp(startSY * 0.86, startSY * 0.93, phase1), 1, ease3);
+      const ty     = lerp(lerp(70, 20, phase1), 0, ease3);
+      const radius = lerp(lerp(24, 24, phase1), 0, ease3);
+      const bw     = lerp(4, 0, ease3);
+      const pad    = lerp(12, 0, ease3);
+
+      shot.style.transform    = `perspective(1600px) rotateX(${rotX.toFixed(2)}deg) scaleX(${scaleX.toFixed(4)}) scaleY(${scaleY.toFixed(4)}) translateY(${ty.toFixed(1)}px)`;
+      shot.style.borderRadius = radius.toFixed(1) + "px";
+      shot.style.borderWidth  = bw.toFixed(1) + "px";
+      shot.style.padding      = pad.toFixed(1) + "px";
+      if(shotInner) shotInner.style.borderRadius = lerp(14, 0, ease3).toFixed(1) + "px";
+
+      // Phase 2 (0.5 → 0.7): title drifts out
+      if(titleEl){
+        const t2 = clamp((p - 0.5) / 0.2, 0, 1);
+        titleEl.style.opacity   = (1 - t2).toFixed(2);
+        titleEl.style.transform = `translateX(-50%) translateY(${(-t2 * 60).toFixed(1)}px)`;
       }
+
+      // HUD fades early
       if(hud){
-        const ho = clamp(1 - p * 2.4, 0, 1);
-        hud.style.opacity = String(ho.toFixed(2));
+        hud.style.opacity   = clamp(1 - p * 2.4, 0, 1).toFixed(2);
         hud.style.transform = `translateY(${(-p * 50).toFixed(1)}px)`;
       }
+
+      // Caption reveals at fullscreen
       if(cap){
-        const o = clamp((p - 0.6) / 0.22, 0, 1);
-        cap.style.opacity = String(o);
+        const o = clamp((p - 0.75) / 0.18, 0, 1);
+        cap.style.opacity   = o.toFixed(2);
         cap.style.transform = `translate3d(0,${((1 - o) * 40).toFixed(1)}px,0)`;
       }
-      return p > 0.06 && p < 0.97 ? "scope" : null;
+
+      return p > 0.04 && p < 0.98 ? "scope" : null;
     });
   });
 

@@ -208,28 +208,115 @@ body.has-cursor.cur-labeled #cur-label{opacity:1;transform:scale(1)}
 .chap-sub{color:var(--mist);margin:22px auto 0;max-width:46ch;font-size:1rem;line-height:1.75}
 .veil{position:absolute;inset:0;z-index:8;background:var(--ink);will-change:transform}
 
-/* ---- frame to fullscreen ---- */
-.stage{position:relative;height:300vh}
-.stage-pin{position:sticky;top:0;height:100svh;overflow:hidden;display:flex;
-  align-items:center;justify-content:center;perspective:1400px}
-.shot{position:relative;overflow:hidden;will-change:transform;background:var(--graphite);
-  border:1px solid rgba(255,255,255,.16);box-shadow:0 24px 60px rgba(0,0,0,.6);border-radius:6px}
-.shot svg,.shot img{width:100%;height:100%;object-fit:cover;display:block}
-.shot-cap{position:absolute;z-index:14;left:0;right:0;bottom:0;padding:0 var(--pad) clamp(40px,7vh,86px);
-  max-width:var(--maxw);margin:0 auto;will-change:opacity,transform}
-.shot-scrim{position:absolute;inset:0;z-index:12;pointer-events:none;
-  background:radial-gradient(ellipse at 80% 40%, rgba(200,162,83,.10) 0%, transparent 45%),
-             linear-gradient(to top,rgba(5,7,10,.95) 0%,rgba(5,7,10,.45) 30%,rgba(5,7,10,0) 65%)}
-.shot-meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(126px,1fr));gap:10px;
-  border-top:0;margin-top:24px;max-width:760px}
-.shot-meta div{background:rgba(5,7,10,.6);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-  border:1px solid rgba(255,255,255,.09);padding:14px 18px;border-radius:8px;
-  transition:border-color .3s, transform .3s}
-.shot-meta div:hover{border-color:rgba(200,162,83,.4);transform:translateY(-2px)}
-.shot-meta dt{font-family:var(--display);font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;
-  color:var(--mist);font-stretch:100%;margin-bottom:6px}
-.shot-meta dd{margin:0;font-family:var(--display);font-size:1.05rem;font-weight:700;color:var(--white);
-  font-stretch:104%;font-variant-numeric:tabular-nums}
+
+/* ---- frame to fullscreen (FrameToFullscreen pattern) ---- */
+.stage { position: relative; height: 340vh; background: #05070A; }
+.stage-pin {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  perspective: 1600px;
+  transform-style: preserve-3d;
+  background: #05070A;
+}
+.stage-title {
+  position: absolute;
+  top: 8vh;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  text-align: center;
+  width: 100%;
+  max-width: var(--maxw);
+  padding: 0 var(--pad);
+  pointer-events: none;
+  will-change: transform, opacity;
+}
+.shot {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100svh;
+  overflow: hidden;
+  will-change: transform, border-radius;
+  background: var(--graphite);
+  /* Gold cinematic border — shrinks to 0 on fullscreen */
+  border: 4px solid rgba(200,162,83,0.55);
+  border-radius: 24px;
+  box-shadow:
+    0 0 0 1px rgba(200,162,83,0.15),
+    0 0 45px rgba(200,162,83,0.25),
+    0 32px 80px rgba(0,0,0,0.85);
+  transform-origin: 50% 100%;
+  transform-style: preserve-3d;
+  padding: 12px;
+}
+.shot-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 14px;
+  will-change: border-radius;
+}
+.shot-inner svg, .shot-inner img,
+.shot svg, .shot img { width:100%; height:100%; object-fit:cover; display:block; }
+.shot-cap {
+  position: absolute;
+  z-index: 14;
+  left: 0; right: 0; bottom: 0;
+  padding: 0 var(--pad) clamp(40px,7vh,86px);
+  max-width: var(--maxw);
+  margin: 0 auto;
+  will-change: opacity, transform;
+}
+.shot-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 12;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 80% 40%, rgba(200,162,83,.10) 0%, transparent 45%),
+    linear-gradient(to top, rgba(5,7,10,.95) 0%, rgba(5,7,10,.45) 30%, rgba(5,7,10,0) 65%);
+}
+.shot-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(126px,1fr));
+  gap: 10px;
+  margin-top: 24px;
+  max-width: 760px;
+}
+.shot-meta div {
+  background: rgba(5,7,10,.6);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,.09);
+  padding: 14px 18px;
+  border-radius: 8px;
+  transition: border-color .3s, transform .3s;
+}
+.shot-meta div:hover { border-color: rgba(200,162,83,.4); transform: translateY(-2px); }
+.shot-meta dt {
+  font-family: var(--display);
+  font-size: .58rem;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--mist);
+  margin-bottom: 6px;
+}
+.shot-meta dd {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--white);
+  font-variant-numeric: tabular-nums;
+}
 
 /* ---- horizontal rails ---- */
 .rails{padding-block:clamp(40px,6vw,90px);overflow:hidden}
@@ -789,7 +876,7 @@ body.has-cursor.cur-labeled #cur-label{opacity:1;transform:scale(1)}
    ============================================================ */
 .book-fold {
   position: relative;
-  height: 250vh;
+  height: 280vh;
   background: #05070A;
 }
 .book-fold-pin {
@@ -798,68 +885,68 @@ body.has-cursor.cur-labeled #cur-label{opacity:1;transform:scale(1)}
   height: 100svh;
   overflow: hidden;
   background: #05070A;
-  perspective: 1800px;
+  perspective: 2000px;
   transform-style: preserve-3d;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
+
+/* Full image lives here — behind both covers, always full viewport */
+.book-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+}
+.book-bg img, .book-bg svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transform: scale(1.05); /* slight over-scale for parallax headroom */
+}
+/* Atmospheric scrim over the background image */
+.book-bg-scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 60%, rgba(200,162,83,0.12) 0%, transparent 55%),
+    linear-gradient(to bottom, rgba(5,7,10,0.55) 0%, rgba(5,7,10,0.2) 50%, rgba(5,7,10,0.65) 100%);
+}
+
 .book-cover {
   position: absolute;
   left: 0;
   right: 0;
   height: 50%;
-  overflow: hidden;
+  z-index: 8;
   transform-style: preserve-3d;
   will-change: transform, opacity;
+  /* Solid dark cover — hides the image until it folds back */
+  background: #07090D;
 }
 .book-cover.top {
   top: 0;
   transform-origin: 50% 100%;
-  z-index: 8;
-  border-bottom: 1px solid rgba(200,162,83,0.35);
-  box-shadow: 0 30px 80px rgba(0,0,0,0.85);
+  border-bottom: 1px solid rgba(200,162,83,0.4);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.9);
 }
 .book-cover.bottom {
   bottom: 0;
   transform-origin: 50% 0%;
   z-index: 7;
-  border-top: 1px solid rgba(200,162,83,0.35);
-  box-shadow: 0 -30px 80px rgba(0,0,0,0.85);
+  border-top: 1px solid rgba(200,162,83,0.4);
+  box-shadow: 0 -30px 80px rgba(0,0,0,0.9);
+  background: #09090F;
 }
-.book-cover-media {
-  position: absolute;
-  left: -5%;
-  width: 110%;
-  pointer-events: none;
-}
-/* Top half: media fills downward from top of the cover, show upper portion of image */
-.book-cover.top .book-cover-media {
-  top: 0;
-  height: 200%;   /* extends into the bottom cover's space so image appears full */
-}
-/* Bottom half: media fills upward from bottom of the cover, show lower portion */
-.book-cover.bottom .book-cover-media {
-  bottom: 0;
-  height: 200%;   /* extends into the top cover's space */
-}
-.book-cover-media img, .book-cover-media svg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-/* Pin each half to show the correct part of the same image */
-.book-cover.top    .book-cover-media img { object-position: center top; }
-.book-cover.bottom .book-cover-media img { object-position: center bottom; }
-.book-cover-scrim {
+/* Subtle grain texture on covers */
+.book-cover::after {
+  content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(5,7,10,0.92) 0%, rgba(5,7,10,0.6) 60%, rgba(5,7,10,0.95) 100%);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
   pointer-events: none;
-}
-.book-cover-scrim.btm {
-  background: linear-gradient(to top, rgba(5,7,10,0.92) 0%, rgba(5,7,10,0.6) 60%, rgba(5,7,10,0.95) 100%);
+  opacity: 0.5;
 }
 .book-cover-badge {
   position: absolute;
@@ -1161,6 +1248,9 @@ body.has-cursor.cur-labeled #cur-label{opacity:1;transform:scale(1)}
   .cine-pin{position:relative;height:88svh}
   .stage,.zoom,.outro,.vcine{height:auto}
   .stage-pin,.zoom-pin,.outro-pin,.vcine-pin{position:relative;height:auto;min-height:70svh}
+  .shot { transform:none !important; border-radius:0 !important; border-width:0 !important; padding:0 !important; }
+  .shot-inner { border-radius:0 !important; }
+  .stage-title { position:relative; left:auto; transform:none !important; opacity:1 !important; }
   .chap{height:auto;padding-block:clamp(70px,14vh,150px)}
   .zf{position:relative;height:auto;margin-bottom:12px}
   .zf>div{width:100%!important;height:auto!important;left:0!important;top:0!important;aspect-ratio:16/9}
@@ -1171,5 +1261,7 @@ body.has-cursor.cur-labeled #cur-label{opacity:1;transform:scale(1)}
   .warp-halo, .warp-flash, .morph-ring { transform: none !important; opacity: 1 !important; }
   .morph-card { position: relative !important; transform: none !important; margin: 12px auto; }
   .roads-shutter { display: none !important; }
-  .book-cover { position: relative !important; transform: none !important; height: auto !important; }
+  .book-bg { transform: none !important; }
+  .book-cover { transform: none !important; height: 50% !important; }
+  .book-cover.top { opacity: 0; }   /* show full image, hide folded covers */
 }
