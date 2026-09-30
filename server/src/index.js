@@ -65,12 +65,12 @@ app.disable("x-powered-by");
 // fonts are the only third-party origin the page talks to.
 const CSP = [
   "default-src 'self'",
-  "script-src 'self' blob:",
+  "script-src 'self' blob: https://cdn.jsdelivr.net",
   "script-src-attr 'unsafe-inline'",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' data: https://fonts.gstatic.com",
   "img-src 'self' data: blob:",
-  "connect-src 'self'",
+  "connect-src 'self' https://vitals.vercel-analytics.com",
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",
