@@ -95,7 +95,7 @@ body.has-cursor.cur-labeled #cur-label{opacity:1;transform:scale(1)}
 @keyframes waveBar{0%,100%{height:3px}50%{height:11px}}
 
 /* ---- split-text reveal ---- */
-.ln{display:block;overflow:hidden}
+.ln{display:inline-block;overflow:hidden;vertical-align:bottom;padding-bottom:0.06em}
 .ln>span{display:inline-block;transform:translateY(105%) rotate(2.5deg);
   transition:transform 1.05s cubic-bezier(.19,1,.22,1)}
 .ln.in>span{transform:none}
@@ -114,9 +114,9 @@ body.has-cursor.cur-labeled #cur-label{opacity:1;transform:scale(1)}
              radial-gradient(circle at 15% 95%, rgba(13,17,23,.85) 0%, transparent 60%),
              linear-gradient(to top,rgba(5,7,10,.96) 2%,rgba(5,7,10,.48) 38%,rgba(5,7,10,.14) 62%,rgba(5,7,10,.72) 100%)}
 .cine-copy{position:absolute;z-index:30;left:0;right:0;bottom:0;
-  padding:0 var(--pad) clamp(56px,10vh,124px);max-width:var(--maxw);margin:0 auto;
+  padding:0 var(--pad) clamp(40px,8vh,110px);max-width:var(--maxw);margin:0 auto;
   will-change:transform,opacity}
-.cine-copy .h-hero{margin:18px 0 0;max-width:13ch;text-shadow:0 8px 32px rgba(0,0,0,.6)}
+.cine-copy .h-hero{margin:16px 0 0;max-width:13ch;line-height:1.02;text-shadow:0 8px 32px rgba(0,0,0,.6)}
 
 /* Live showroom pill */
 .live-pill{display:inline-flex;align-items:center;gap:10px;padding:6px 14px;border-radius:999px;
@@ -129,7 +129,7 @@ body.has-cursor.cur-labeled #cur-label{opacity:1;transform:scale(1)}
 
 /* Frosted glass stats */
 .cine-stat{display:flex;gap:clamp(10px,1.8vw,22px);flex-wrap:wrap;align-items:stretch;
-  margin-top:36px;padding-top:0;border-top:0}
+  margin-top:32px;padding-top:0;border-top:0}
 .cine-stat>div{background:rgba(13,17,23,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
   border:1px solid rgba(255,255,255,.09);padding:14px 22px;border-radius:12px;min-width:140px;
   box-shadow:0 12px 30px rgba(0,0,0,.4);transition:border-color .3s, transform .3s}
@@ -138,6 +138,20 @@ body.has-cursor.cur-labeled #cur-label{opacity:1;transform:scale(1)}
   color:var(--white);font-stretch:110%;line-height:1;display:block;font-variant-numeric:tabular-nums}
 .cine-stat span{font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--mist);
   font-family:var(--display);font-stretch:100%;display:block;margin-top:8px}
+
+@media(max-width:768px){
+  .cine{height:190vh}
+  .cine-copy{padding:0 var(--pad) 18px;bottom:0}
+  .cine-copy .h-hero{font-size:clamp(1.85rem,7.8vw,2.35rem);line-height:1.06;max-width:100%;margin:8px 0 0}
+  .cine-copy .lede{margin:8px 0 16px!important;font-size:0.88rem;line-height:1.45;max-width:100%}
+  .cine-copy .btn-row{gap:8px}
+  .cine-copy .btn{padding:12px 18px;font-size:0.7rem;flex:1 1 auto}
+  .cine-stat{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:14px}
+  .cine-stat>div{min-width:0;padding:8px 4px;text-align:center;border-radius:8px}
+  .cine-stat b{font-size:1.02rem}
+  .cine-stat span{font-size:0.48rem;letter-spacing:0.06em;margin-top:3px}
+  .live-pill{padding:4px 10px;font-size:0.58rem;gap:6px}
+}
 
 .cue{position:absolute;z-index:30;right:var(--pad);bottom:clamp(56px,10vh,124px);
   writing-mode:vertical-rl;font-family:var(--display);font-size:.6rem;letter-spacing:.36em;

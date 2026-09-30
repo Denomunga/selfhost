@@ -58,7 +58,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 
 /* ---- type scale ---- */
 h1,h2,h3,h4{font-family:var(--display);font-weight:800;margin:0;color:var(--white);
-  font-stretch:118%;letter-spacing:-.02em;line-height:.94;text-transform:uppercase}
+  font-stretch:118%;letter-spacing:-.02em;line-height:1.04;text-transform:uppercase}
 .h-hero{font-size:clamp(2.6rem,8.4vw,7.4rem)}
 .h-1{font-size:clamp(2rem,5.2vw,4.2rem)}
 .h-2{font-size:clamp(1.5rem,3.2vw,2.6rem)}
