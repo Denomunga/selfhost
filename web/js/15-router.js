@@ -140,7 +140,6 @@ function mountChrome(){
 
 let LAST_KEY = "";
 function render(){
-  console.log("[Router] render() called, DB.ready:", DB.ready);
   if(!DB.ready){
     $("#app").innerHTML = `<div class="loading">Loading the collection…</div>`;
     return;
@@ -150,8 +149,6 @@ function render(){
   const root = "/" + (seg[0] || "");
   const id = seg[1] ? decodeURIComponent(seg[1]) : null;
   const app = $("#app");
-  
-  console.log("[Router] Parsed route - root:", root, "id:", id, "hash:", location.hash);
 
   if(query.model) FILTER.model = query.model;
   if(query.status) FILTER.status = query.status.toUpperCase();
@@ -166,19 +163,14 @@ function render(){
   else if(root === "/admin")   {
     if((seg[1] === "marketing" && seg[2] === "meta") || seg[1] === "meta") ADMIN_TAB = "meta_ads";
     else if(query.tab) ADMIN_TAB = query.tab;
-    console.log("[Router] /admin route, Auth.session:", Auth.session);
-    console.log("[Router] DB.canEdit:", DB.canEdit, "DB.uid:", DB.uid);
     html = viewAdmin();
   }
   else if(root === "/login")   {
-    console.log("[Router] /login route, Auth.session:", Auth.session);
     html = Auth.session ? viewAdmin() : viewLogin();
   }
   else                         html = viewHome();
 
-  console.log("[Router] HTML generated, about to set innerHTML");
   app.innerHTML = html;
-  console.log("[Router] innerHTML set, calling mountChrome");
   mountChrome();
 
   if(root === "/cars" && id) mountCar(id);
@@ -187,15 +179,8 @@ function render(){
   else if(root === "/parts") mountParts();
   else if(root === "/stories" && !id) mountStories();
   else if(root === "/contact") mountContact();
-  else if(root === "/admin" || root === "/login"){ 
-    console.log("[Router] Mounting admin/login, Auth.session:", Auth.session);
-    if(Auth.session) {
-      console.log("[Router] Calling mountAdmin()");
-      mountAdmin(); 
-    } else {
-      console.log("[Router] Calling mountLogin()");
-      mountLogin(); 
-    }
+  else if(root === "/admin" || root === "/login"){
+    if(Auth.session) mountAdmin(); else mountLogin();
   }
   else if(root === "/") mountHome();
 
@@ -207,11 +192,9 @@ function render(){
 
   const key = root + "/" + (id||"");
   if(key !== LAST_KEY){ Smooth.jump(0); LAST_KEY = key; }
-  console.log("[Router] render() completed for key:", key);
 }
 
 window.addEventListener("hashchange", () => {
-  console.log("[Router] hashchange event detected, new hash:", location.hash);
   render();
 });
 // Make render globally available for manual triggering

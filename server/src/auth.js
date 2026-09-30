@@ -75,13 +75,6 @@ function verifySession(token) {
 }
 
 function setSessionCookie(res, token) {
-  console.log("[AUTH] Setting session cookie");
-  console.log("[AUTH] Cookie name:", COOKIE_NAME);
-  console.log("[AUTH] Cookie sameSite:", COOKIE_SAMESITE);
-  console.log("[AUTH] Cookie secure:", process.env.COOKIE_SECURE === "true");
-  console.log("[AUTH] Cookie maxAge:", SESSION_MAX_AGE_MS);
-  console.log("[AUTH] Token length:", token.length);
-  
   res.cookie(COOKIE_NAME, token, {
     httpOnly: true,
     sameSite: COOKIE_SAMESITE,
@@ -89,12 +82,18 @@ function setSessionCookie(res, token) {
     maxAge: SESSION_MAX_AGE_MS,
     path: "/"
   });
-  
-  console.log("[AUTH] Session cookie set successfully");
 }
 
 function clearSessionCookie(res) {
-  res.clearCookie(COOKIE_NAME, { path: "/" });
+  // The browser only honous Max-Age=0 if the clearing Set-Cookie matches the
+  // original cookie's SameSite + Secure attributes.  Without them the cookie
+  // silently survives logout in cross-site (Render/Vercel) deployments.
+  res.clearCookie(COOKIE_NAME, {
+    path: "/",
+    httpOnly: true,
+    sameSite: COOKIE_SAMESITE,
+    secure: process.env.COOKIE_SECURE === "true"
+  });
 }
 
 function readSession(req) {

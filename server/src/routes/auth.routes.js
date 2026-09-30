@@ -63,13 +63,7 @@ function withFloor(startedAt, fn) {
 router.post("/login", loginLimiter, express.json(), wrap(async (req, res) => {
   const startedAt = Date.now();
   const { username, password } = req.body || {};
-  console.log("[LOGIN] Attempt for username:", username);
-  console.log("[LOGIN] Request origin:", req.headers.origin);
-  console.log("[LOGIN] Request cookies:", req.cookies);
-  console.log("[LOGIN] Request headers:", Object.keys(req.headers));
-  
   if (!username || !password) {
-    console.log("[LOGIN] Missing username or password");
     return withFloor(startedAt, () => res.status(400).json({ error: "Username and password are required." }));
   }
   try {
@@ -79,16 +73,13 @@ router.post("/login", loginLimiter, express.json(), wrap(async (req, res) => {
       { collation: { locale: "en", strength: 2 } }
     );
     if (!user) {
-      console.log("[LOGIN] User not found:", login);
       return withFloor(startedAt, () => res.status(401).json({ error: "Username or password is wrong." }));
     }
     const ok = await verifyPassword(password, user.password_hash);
     if (!ok) {
-      console.log("[LOGIN] Password verification failed for:", login);
       return withFloor(startedAt, () => res.status(401).json({ error: "Username or password is wrong." }));
     }
     if (!user.active) {
-      console.log("[LOGIN] Account disabled:", login);
       return withFloor(startedAt, () => res.status(403).json({ error: "This account has been disabled." }));
     }
     await getDb().collection("auth_users").updateOne({ _id: user._id }, { $set: { last_login: new Date() } });
@@ -96,14 +87,11 @@ router.post("/login", loginLimiter, express.json(), wrap(async (req, res) => {
     await mirrorUserDoc(freshUser);
     changed("users");
     const token = signSession(user);
-    console.log("[LOGIN] Token generated for user:", user.username, "role:", user.role);
     setSessionCookie(res, token);
-    console.log("[LOGIN] Session cookie set. Response headers:", Object.keys(res.getHeaders()));
     await withFloor(startedAt, () => null);
     res.json({
       user: { id: user._id, username: user.username, role: user.role, name: user.name || user.username, mustChange: user.must_change }
     });
-    console.log("[LOGIN] Login successful for:", user.username);
   } catch (e) {
     console.error("[LOGIN] failed", e);
     res.status(500).json({ error: "Sign-in failed. Try again." });
@@ -116,15 +104,11 @@ router.post("/logout", (req, res) => {
 });
 
 router.get("/me", requireAuth, wrap(async (req, res) => {
-  console.log("[AUTH/ME] Session check. Request cookies:", req.cookies);
-  console.log("[AUTH/ME] Session data:", req.session);
   try {
     const user = await getDb().collection("auth_users").findOne({ _id: req.session.uid });
     if (!user || !user.active) {
-      console.log("[AUTH/ME] User not found or inactive:", req.session.uid);
       return res.status(401).json({ error: "Session no longer valid." });
     }
-    console.log("[AUTH/ME] User found:", user.username, "role:", user.role);
     res.json({
       user: { id: user._id, username: user.username, role: user.role, name: user.name || user.username, mustChange: user.must_change }
     });
