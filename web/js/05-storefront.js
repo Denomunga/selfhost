@@ -380,8 +380,8 @@ function viewHome(){
         <div class="outro-in">
           <h2 class="h-1" data-split data-stagger="0.07">Where will your Subaru take you?</h2>
           <div class="btn-row fade-up" style="justify-content:center;margin-top:32px">
-            <a class="btn btn--solid" href="#/cars">Explore Subaru</a>
-            <a class="btn" href="#/contact">Contact us</a>
+            <a class="btn btn--solid" href="#/cars">Explore Subaru <span class="btn-arrow">→</span></a>
+            <a class="btn" href="#/contact">Contact us <span class="btn-arrow">→</span></a>
           </div>
         </div>
       </div>

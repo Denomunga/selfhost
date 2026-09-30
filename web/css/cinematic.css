@@ -266,13 +266,21 @@ body.has-cursor.cur-labeled #cur-label{opacity:1;transform:scale(1)}
   justify-content:center;text-align:center}
 .outro-bg{position:absolute;inset:-8%;will-change:transform}
 .outro-bg svg,.outro-bg img{width:100%;height:100%;object-fit:cover;display:block}
-.outro-in{position:relative;z-index:10;padding-inline:var(--pad);max-width:60ch;
+.outro-in{position:relative;z-index:30;padding-inline:var(--pad);max-width:60ch;
   -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;
   transform:translateZ(0);backface-visibility:hidden}
 .outro .btn-row{margin-top:32px;gap:16px;justify-content:center}
-.outro .btn{min-width:160px;position:relative;z-index:12;
+.outro .btn{min-width:170px;position:relative;z-index:32;
+  background:rgba(13,17,23,.82);border:1px solid rgba(255,255,255,.32);
+  color:var(--white);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  box-shadow:0 8px 30px rgba(0,0,0,.65);
   -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
   text-rendering:optimizeLegibility;transform:translateZ(0);backface-visibility:hidden}
+.outro .btn:hover{background:rgba(255,255,255,.16);border-color:var(--white);color:var(--white);transform:translateY(-2px)}
+.outro .btn--solid{background:linear-gradient(135deg, #DFB76C 0%, #C8A253 45%, #9E7D37 100%) !important;
+  border-color:#DFB76C !important;color:#0D0A03 !important;
+  box-shadow:0 8px 30px rgba(0,0,0,.65), 0 0 20px rgba(200,162,83,.35) !important}
+.outro .btn--solid:hover{background:linear-gradient(135deg, #EAC37D 0%, #D4AE5E 45%, #B08B3E 100%) !important;color:#070501 !important}
 
 /* ---- parallax plate inside a standard hero ---- */
 .v-hero [data-par]{position:absolute;inset:-8%}
