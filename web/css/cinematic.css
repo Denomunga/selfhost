@@ -205,6 +205,10 @@ body.has-cursor.cur-hot .cur{width:74px;height:74px;margin:-37px 0 0 -37px;backg
 .outro-in{position:relative;z-index:10;padding-inline:var(--pad);max-width:60ch;
   -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;
   transform:translateZ(0);backface-visibility:hidden}
+.outro .btn-row{margin-top:32px;gap:16px;justify-content:center}
+.outro .btn{min-width:160px;position:relative;z-index:12;
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  text-rendering:optimizeLegibility;transform:translateZ(0);backface-visibility:hidden}
 
 /* ---- parallax plate inside a standard hero ---- */
 .v-hero [data-par]{position:absolute;inset:-8%}
