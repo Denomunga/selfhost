@@ -191,7 +191,7 @@ function viewHome(){
         <div class="planes"><div class="plane" data-depth="0.32">${homePhoto(HOME_PHOTOS.hero, "", true)}</div></div>
         <div class="cine-scrim"></div>
         <div class="cine-copy">
-          <span class="tag fade-up">Subaru · Kenya</span>
+          <div class="live-pill fade-up"><span class="beacon"></span><span>Live Showroom · Nairobi, Kenya</span></div>
           <h1 class="h-hero" data-split data-stagger="0.085">${esc(s.heroTitle)}</h1>
           <p class="lede fade-up" style="margin:24px 0 32px">${esc(s.heroSub)}</p>
           <div class="btn-row fade-up">
