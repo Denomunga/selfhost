@@ -54,7 +54,13 @@ if (allowedOrigins.length) {
   app.use("/api", (req, res, next) => {
     if (req.method === "GET" || req.method === "HEAD" || req.method === "OPTIONS") return next();
     const origin = req.headers.origin;
-    if (!origin || allowedOrigins.includes(origin)) return next();
+    // No Origin header → same-origin / server-to-server / curl — allow.
+    if (!origin) return next();
+    // Origin already approved by the cors() middleware above → allow.
+    // cors() sets Access-Control-Allow-Origin when it recognises the origin,
+    // so we piggyback on that decision instead of re-checking the list.
+    if (res.getHeader("Access-Control-Allow-Origin")) return next();
+    // Origin present but cors() didn't approve it → reject.
     return res.status(403).json({ error: "Cross-origin request rejected." });
   });
 }
