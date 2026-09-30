@@ -24,7 +24,11 @@
 .sb{background:var(--charcoal);border-right:1px solid var(--rule);display:flex;flex-direction:column;
   padding:22px 0 16px;position:sticky;top:0;height:100svh}
 .sb .brand{padding:0 20px 22px;border-bottom:1px solid var(--rule);margin-bottom:14px}
-.sb-nav{flex:1;padding:0 10px;overflow-y:auto;min-height:0}
+.sb-nav{flex:1;padding:0 10px;overflow-y:auto;min-height:0;overscroll-behavior:contain;touch-action:pan-y;
+  scrollbar-width:thin;scrollbar-color:var(--steel) transparent}
+.sb-nav::-webkit-scrollbar{width:5px}
+.sb-nav::-webkit-scrollbar-thumb{background:var(--steel);border-radius:99px}
+.sb-nav::-webkit-scrollbar-track{background:transparent}
 .sb-group{font-family:var(--display);font-size:.56rem;letter-spacing:.26em;text-transform:uppercase;
   color:var(--mist);padding:18px 10px 8px;font-stretch:100%}
 .sb-item{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;

@@ -291,6 +291,8 @@ function mountAdmin(){
     refreshAdmin();
   }));
   bindOnce($("#sb-toggle"), "click", ()=>$("#sb").classList.toggle("open"));
+  const sbEl = $("#sb");
+  if(sbEl) bindOnce(sbEl, "wheel", e => e.stopPropagation(), { passive: true });
   bindOnce($("#a-out"), "click", async ()=>{ 
     await Auth.signOut(); 
     toast("Signed out"); 
