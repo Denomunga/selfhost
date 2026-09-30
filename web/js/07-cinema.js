@@ -258,12 +258,144 @@ function mountCursor(){
       }
     });
     AudioFX.init();
+    mountHoloTilt();
   }
   FX.add(ring, () => {
     CUR.rx = lerp(CUR.rx, CUR.mx, 0.16); CUR.ry = lerp(CUR.ry, CUR.my, 0.16);
     CUR.nx = lerp(CUR.nx, CUR.tnx, 0.08); CUR.ny = lerp(CUR.ny, CUR.tny, 0.08);
     ring.style.transform = `translate(${CUR.rx.toFixed(1)}px,${CUR.ry.toFixed(1)}px)`;
   });
+}
+
+/* --- holographic specular glare & 3D tilt --- */
+let TILT_MOUNTED = false;
+function mountHoloTilt(){
+  if(TILT_MOUNTED) return;
+  TILT_MOUNTED = true;
+  let activeCard = null;
+
+  document.addEventListener("mousemove", e => {
+    if(COARSE() || REDUCED()) return;
+    const card = e.target && e.target.closest && e.target.closest(".card, .tile, .morph-card, .shot");
+    if(!card){
+      if(activeCard){
+        activeCard.style.transform = "";
+        activeCard.style.setProperty("--ga", "0");
+        activeCard = null;
+      }
+      return;
+    }
+    activeCard = card;
+    const r = card.getBoundingClientRect();
+    const px = clamp((e.clientX - r.left) / r.width, 0, 1);
+    const py = clamp((e.clientY - r.top) / r.height, 0, 1);
+    const rx = (-(py - 0.5) * 12).toFixed(2);
+    const ry = ((px - 0.5) * 12).toFixed(2);
+    
+    // Do not override .shot or .morph-card's own scroll transform
+    if(!card.classList.contains("shot") && !card.classList.contains("morph-card")){
+      card.style.transform = `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg) translateZ(6px)`;
+    }
+    card.style.setProperty("--gx", (px * 100).toFixed(1) + "%");
+    card.style.setProperty("--gy", (py * 100).toFixed(1) + "%");
+    card.style.setProperty("--ga", "0.65");
+  }, {passive:true});
+
+  document.addEventListener("mouseleave", () => {
+    if(activeCard){
+      activeCard.style.transform = "";
+      activeCard.style.setProperty("--ga", "0");
+      activeCard = null;
+    }
+  });
+}
+
+/* --- precision specification ruler --- */
+const SPEC_METRICS = {
+  clearance: { title: "Ground Clearance", val: 220, unit: " mm", min: 160, max: 260, step: 2, totalTicks: 51 },
+  power: { title: "Boxer Turbo Power", val: 260, unit: " HP", min: 140, max: 320, step: 5, totalTicks: 37 },
+  awd: { title: "AWD Torque Split", val: 60, unit: " % Front", min: 40, max: 80, step: 1, totalTicks: 41 },
+  cargo: { title: "Boot Cargo Volume", val: 522, unit: " Litres", min: 380, max: 1800, step: 25, totalTicks: 58 },
+  economy: { title: "Highway Fuel Economy", val: 7.3, unit: " L / 100km", min: 5.5, max: 12.0, step: 0.1, totalTicks: 66 }
+};
+let currentMetricKey = "clearance";
+
+function renderRulerTicks(metricKey) {
+  const container = $("#ruler-ticks");
+  if(!container) return;
+  const cfg = SPEC_METRICS[metricKey] || SPEC_METRICS.clearance;
+  let html = "";
+  for(let i = 0; i < cfg.totalTicks; i++){
+    const isFifth = (i % 5 === 0);
+    const isTenth = (i % 10 === 0);
+    const cls = isTenth ? "l" : (isFifth ? "m" : "s");
+    html += `<span class="ruler-tick ${cls}"></span>`;
+  }
+  container.innerHTML = html;
+}
+
+function mountSpecRuler() {
+  const wrap = $("#ruler-tape-wrap");
+  const ticks = $("#ruler-ticks");
+  const valEl = $("#ruler-metric-val");
+  const titleEl = $("#ruler-metric-title");
+  if(!wrap || !ticks) return;
+
+  renderRulerTicks(currentMetricKey);
+
+  let isDragging = false, startX = 0, currentOffset = 0, targetOffset = 0;
+  const cfg = () => SPEC_METRICS[currentMetricKey] || SPEC_METRICS.clearance;
+
+  const updateReadout = () => {
+    const c = cfg();
+    const maxOffset = Math.max(1, ticks.scrollWidth - wrap.clientWidth);
+    const p = clamp(-targetOffset / maxOffset, 0, 1);
+    const range = c.max - c.min;
+    const computedVal = c.min + p * range;
+    const displayVal = c.step < 1 ? computedVal.toFixed(1) : Math.round(computedVal);
+    if(valEl) valEl.textContent = displayVal + c.unit;
+    if(titleEl) titleEl.textContent = c.title;
+  };
+
+  const setMetric = (key) => {
+    currentMetricKey = key;
+    renderRulerTicks(key);
+    const c = cfg();
+    const p = clamp((c.val - c.min) / (c.max - c.min), 0, 1);
+    const maxOffset = Math.max(1, ticks.scrollWidth - wrap.clientWidth);
+    targetOffset = currentOffset = -p * maxOffset;
+    ticks.style.transform = `translate3d(${currentOffset.toFixed(1)}px,0,0)`;
+    updateReadout();
+    $$(".ruler-tab").forEach(tab => tab.classList.toggle("on", tab.dataset.metric === key));
+  };
+
+  $$(".ruler-tab").forEach(tab => {
+    tab.onclick = () => setMetric(tab.dataset.metric);
+  });
+
+  const onDragStart = (cx) => {
+    isDragging = true;
+    startX = cx - targetOffset;
+  };
+  const onDragMove = (cx) => {
+    if(!isDragging) return;
+    const maxOffset = Math.max(1, ticks.scrollWidth - wrap.clientWidth);
+    targetOffset = clamp(cx - startX, -maxOffset, 0);
+    currentOffset = targetOffset;
+    ticks.style.transform = `translate3d(${currentOffset.toFixed(1)}px,0,0)`;
+    updateReadout();
+  };
+  const onDragEnd = () => { isDragging = false; };
+
+  wrap.onmousedown = (e) => onDragStart(e.clientX);
+  window.addEventListener("mousemove", (e) => onDragMove(e.clientX), {passive:true});
+  window.addEventListener("mouseup", onDragEnd);
+
+  wrap.ontouchstart = (e) => { if(e.touches && e.touches[0]) onDragStart(e.touches[0].clientX); };
+  wrap.ontouchmove = (e) => { if(e.touches && e.touches[0]) onDragMove(e.touches[0].clientX); };
+  wrap.ontouchend = onDragEnd;
+
+  setMetric(currentMetricKey);
 }
 
 /* --- page reveal --- */
@@ -325,19 +457,28 @@ function mountCinema(){
     });
   });
 
-  // frame → fullscreen: a framed plate flattens out of perspective and fills the screen
+  // 3D cockpit unroll: frame tilts up from 24deg in 3D perspective and unrolls to fullscreen 100vw x 100svh
   $$(".stage").forEach(stage => {
-    const shot = $(".shot", stage), cap = $(".shot-cap", stage);
+    const shot = $(".shot", stage), cap = $(".shot-cap", stage), hud = $(".cockpit-hud", stage);
     FX.add(stage, (r, vh) => {
       const p = stageP(r, vh);
       const e = p < 0.72 ? p / 0.72 : 1;                       // growth finishes early, then holds
       const ease = 1 - Math.pow(1 - e, 3);
       if(shot){
         const w = lerp(38, 100, ease), h = lerp(42, 100, ease);
+        const rotX = lerp(24, 0, ease);
+        const translateY = lerp(40, 0, ease);
+        const radius = lerp(20, 0, ease);
         shot.style.width = w.toFixed(2) + "vw";
         shot.style.height = h.toFixed(2) + "svh";
-        shot.style.transform = `perspective(1400px) rotateX(${lerp(14, 0, ease).toFixed(2)}deg) translateY(${lerp(30, 0, ease).toFixed(1)}px)`;
-        shot.style.borderColor = `rgba(255,255,255,${lerp(0.22, 0.02, ease).toFixed(3)})`;
+        shot.style.borderRadius = radius.toFixed(1) + "px";
+        shot.style.transform = `perspective(1600px) rotateX(${rotX.toFixed(2)}deg) translateY(${translateY.toFixed(1)}px)`;
+        shot.style.borderColor = `rgba(255,255,255,${lerp(0.24, 0.02, ease).toFixed(3)})`;
+      }
+      if(hud){
+        const ho = clamp(1 - p * 2.4, 0, 1);
+        hud.style.opacity = String(ho.toFixed(2));
+        hud.style.transform = `translateY(${(-p * 50).toFixed(1)}px)`;
       }
       if(cap){
         const o = clamp((p - 0.6) / 0.22, 0, 1);
@@ -345,6 +486,153 @@ function mountCinema(){
         cap.style.transform = `translate3d(0,${((1 - o) * 40).toFixed(1)}px,0)`;
       }
       return p > 0.06 && p < 0.97 ? "scope" : null;
+    });
+  });
+
+  // warp depth tunnel: concentric 3D frames surge towards camera
+  $$(".warp-portal").forEach(portal => {
+    const halo = $(".warp-halo", portal);
+    const flash = $(".warp-flash", portal);
+    const label = $(".warp-label", portal);
+    const frames = $$(".warp-frame", portal);
+    const beams = $$(".warp-beam", portal);
+    FX.add(portal, (r, vh) => {
+      const p = stageP(r, vh);
+      if(halo){
+        const hs = lerp(0.4, 2.2, p);
+        const ho = clamp(Math.sin(p * Math.PI) * 0.85, 0, 0.85);
+        halo.style.transform = `translate(-50%, -50%) scale(${hs.toFixed(3)})`;
+        halo.style.opacity = String(ho.toFixed(3));
+      }
+      if(label){
+        const ls = lerp(0.7, 1.25, p);
+        const lo = p < 0.2 ? p / 0.2 : (p > 0.78 ? clamp(1 - (p - 0.78) / 0.16, 0, 1) : 1);
+        label.style.transform = `scale(${ls.toFixed(3)})`;
+        label.style.opacity = String(lo.toFixed(3));
+      }
+      frames.forEach((f, i) => {
+        const offset = i * 0.11;
+        const progress = clamp((p - offset) / 0.65, 0, 1);
+        const s = lerp(0.12, 3.4, Math.pow(progress, 2.2));
+        const o = progress <= 0 ? 0 : (progress < 0.4 ? progress / 0.4 : (progress > 0.85 ? clamp(1 - (progress - 0.85) / 0.15, 0, 1) : 0.95 - i * 0.08));
+        f.style.transform = `scale(${s.toFixed(4)})`;
+        f.style.opacity = String(o.toFixed(3));
+      });
+      beams.forEach((b, i) => {
+        const bo = clamp(Math.sin((p + i * 0.15) * Math.PI) * 0.45, 0, 0.45);
+        b.style.opacity = String(bo.toFixed(3));
+      });
+      if(flash){
+        const fo = p > 0.82 && p < 0.96 ? clamp((p - 0.82) / 0.07, 0, 1) * (p > 0.89 ? clamp(1 - (p - 0.89) / 0.07, 0, 1) : 1) : 0;
+        flash.style.opacity = String(fo.toFixed(3));
+      }
+      return p > 0.02 && p < 0.98 ? "scope" : null;
+    });
+  });
+
+  // 4-phase morphing fleet carousel: scatter -> line -> 3D cylindrical orbit -> dock
+  $$(".fleet-morph").forEach(morph => {
+    const cards = $$(".morph-card", morph);
+    const dots = $$(".mph-dot", morph);
+    const n = cards.length;
+    if(!n) return;
+
+    const scatter = cards.map((_, i) => ({
+      x: ((i % 2 === 0 ? 1 : -1) * (180 + (i * 73) % 260)),
+      y: ((i % 3 === 0 ? -1 : 1) * (80 + (i * 59) % 180)),
+      z: -120 + (i * 45) % 180,
+      rotX: -15 + (i * 12) % 30,
+      rotY: -25 + (i * 19) % 50,
+      rotZ: -8 + (i * 7) % 16,
+    }));
+
+    FX.add(morph, (r, vh) => {
+      const p = stageP(r, vh);
+
+      let activePhase = 0;
+      if(p > 0.82) activePhase = 3;
+      else if(p > 0.44) activePhase = 2;
+      else if(p > 0.22) activePhase = 1;
+      dots.forEach((d, i) => d.classList.toggle("on", i === activePhase));
+
+      const orbitRot = ((p - 0.44) / 0.38) * 360;
+
+      cards.forEach((card, i) => {
+        let x = 0, y = 0, z = 0, rx = 0, ry = 0, rz = 0, s = 1, op = 1;
+
+        if(p <= 0.22){
+          const t = clamp(p / 0.22, 0, 1);
+          const ease = t * t;
+          const sc = scatter[i];
+          const lineX = (i - (n - 1) / 2) * clamp(vh * 0.24, 180, 280);
+          x = lerp(sc.x, lineX, ease);
+          y = lerp(sc.y, 0, ease);
+          z = lerp(sc.z, 0, ease);
+          rx = lerp(sc.rotX, 0, ease);
+          ry = lerp(sc.rotY, 0, ease);
+          rz = lerp(sc.rotZ, 0, ease);
+          s = lerp(0.82, 0.95, ease);
+          op = lerp(0.65, 1, ease);
+        } else if(p <= 0.44){
+          const t = clamp((p - 0.22) / 0.22, 0, 1);
+          const ease = t * t * (3 - 2 * t);
+          const lineX = (i - (n - 1) / 2) * clamp(vh * 0.24, 180, 280);
+          const angle = (i / n) * Math.PI * 2;
+          const radius = clamp(window.innerWidth * 0.34, 250, 460);
+          const circleX = Math.sin(angle) * radius;
+          const circleZ = Math.cos(angle) * radius - radius * 0.4;
+          const circleRY = (angle * 180) / Math.PI;
+
+          x = lerp(lineX, circleX, ease);
+          y = 0;
+          z = lerp(0, circleZ, ease);
+          rx = 0;
+          ry = lerp(0, circleRY, ease);
+          rz = 0;
+          s = 0.95;
+        } else if(p <= 0.82){
+          const radius = clamp(window.innerWidth * 0.34, 250, 460);
+          const baseAngle = (i / n) * Math.PI * 2;
+          const currentAngle = baseAngle + (orbitRot * Math.PI) / 180;
+          x = Math.sin(currentAngle) * radius;
+          z = Math.cos(currentAngle) * radius - radius * 0.3;
+          ry = (currentAngle * 180) / Math.PI;
+          y = Math.sin(currentAngle * 2) * 16;
+          const depthNorm = (z + radius) / (radius * 2);
+          s = lerp(0.8, 1.08, clamp(depthNorm, 0, 1));
+          op = lerp(0.45, 1, clamp(depthNorm, 0, 1));
+        } else {
+          const t = clamp((p - 0.82) / 0.18, 0, 1);
+          const ease = 1 - Math.pow(1 - t, 3);
+          const dockSpacing = clamp(window.innerWidth * 0.14, 110, 170);
+          const dockX = (i - (n - 1) / 2) * dockSpacing;
+          const dockY = lerp(0, vh * 0.24, ease);
+          const dockS = lerp(0.95, 0.65, ease);
+          const radius = clamp(window.innerWidth * 0.34, 250, 460);
+          const baseAngle = (i / n) * Math.PI * 2;
+          const endAngle = baseAngle + 2 * Math.PI;
+          const startX = Math.sin(endAngle) * radius;
+          const startZ = Math.cos(endAngle) * radius - radius * 0.3;
+
+          x = lerp(startX, dockX, ease);
+          y = dockY;
+          z = lerp(startZ, 0, ease);
+          rx = 0;
+          ry = lerp(0, 0, ease);
+          rz = 0;
+          s = dockS;
+          op = 1;
+        }
+
+        card.style.transform = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,${z.toFixed(1)}px) rotateX(${rx.toFixed(1)}deg) rotateY(${ry.toFixed(1)}deg) rotateZ(${rz.toFixed(1)}deg) scale(${s.toFixed(3)})`;
+        card.style.opacity = String(op.toFixed(2));
+      });
+
+      return p > 0.04 && p < 0.96 ? "scope" : null;
+    });
+
+    cards.forEach(c => {
+      c.addEventListener("click", () => c.classList.toggle("flipped"));
     });
   });
 
@@ -357,19 +645,26 @@ function mountCinema(){
     });
   });
 
-  // tilted grid: each tile carries its own depth of field
+  // camera focus-pull grid: optical lens blur when far from center, snapping into tack-sharp clarity at screen center
   $$(".tile").forEach((tile, i) => {
     const odd = i % 3;
     FX.add(tile, (r, vh) => {
-      const c = (r.top + r.height/2 - vh/2) / vh;             // -1 above, +1 below
+      const c = (r.top + r.height/2 - vh/2) / (vh * 0.55);
       const k = clamp(c, -1, 1);
-      const tilt = k * (7 + odd * 2.5);
-      const blur = clamp(Math.abs(k) * 4.5 - 0.6, 0, 4.5);
-      const bright = clamp(1 - Math.abs(k) * 0.52, 0.42, 1);
-      tile.style.transform = `translate3d(0,${(k * (odd - 1) * 34).toFixed(1)}px,0) rotateX(${tilt.toFixed(2)}deg) rotateY(${(k * (odd - 1) * 4).toFixed(2)}deg)`;
-      tile.style.filter = `blur(${blur.toFixed(2)}px) brightness(${bright.toFixed(3)})`;
+      const absK = Math.abs(k);
+      const tilt = k * (8 + odd * 2);
+      const blur = clamp((absK - 0.16) * 6.5, 0, 5.5);
+      const bright = clamp(1 - absK * 0.42, 0.58, 1);
+      const contrast = clamp(1 + absK * 0.28, 1, 1.28);
+      const tz = clamp(absK * 90, 0, 90);
+
+      tile.style.transform = `translate3d(0,${(k * (odd - 1) * 28).toFixed(1)}px,${(-tz).toFixed(1)}px) rotateX(${tilt.toFixed(2)}deg) rotateY(${(k * (odd - 1) * 3.5).toFixed(2)}deg)`;
+      tile.style.filter = blur > 0.2 ? `blur(${blur.toFixed(2)}px) brightness(${bright.toFixed(3)}) contrast(${contrast.toFixed(3)})` : "";
     });
   });
+
+  // specification ruler gauge
+  mountSpecRuler();
 
   // zoom parallax: seven plates, dynamic depth of field
   $$(".zoom").forEach(z => {

@@ -95,9 +95,146 @@ function waLink(item){
 
 /* ---------- 6. CARDS ---------- */
 
+function warpPortalHTML() {
+  return `<section class="warp-portal" aria-label="Warp transition">
+    <div class="warp-pin">
+      <div class="warp-bg"></div>
+      <div class="warp-beams">
+        <div class="warp-beam" style="left:18%"></div>
+        <div class="warp-beam" style="left:38%"></div>
+        <div class="warp-beam" style="left:62%"></div>
+        <div class="warp-beam" style="left:82%"></div>
+      </div>
+      <div class="warp-halo"></div>
+      <div class="warp-frames">
+        <div class="warp-frame"></div>
+        <div class="warp-frame"></div>
+        <div class="warp-frame"></div>
+        <div class="warp-frame"></div>
+        <div class="warp-frame"></div>
+        <div class="warp-frame"></div>
+        <div class="warp-frame"></div>
+      </div>
+      <div class="warp-label">
+        <span class="warp-chap">Chapter 02</span>
+        <h2 class="warp-title">THE<br><span class="gold">COLLECTION</span></h2>
+        <p class="warp-sub">Symmetrical All-Wheel Drive · Boxer Heart</p>
+      </div>
+      <div class="warp-flash"></div>
+    </div>
+  </section>`;
+}
+
+function fleetMorphHTML(cars) {
+  const fleet = (cars || []).slice(0, 7);
+  if(!fleet.length) return "";
+  return `<section class="fleet-morph" aria-label="3D Fleet Matrix">
+    <div class="morph-pin">
+      <div class="morph-head wrap">
+        <span class="tag">Fleet Matrix</span>
+        <h2 class="h-1" style="margin-top:10px" data-split>Engineering <span class="gold">In Orbit</span></h2>
+        <div class="morph-phase-bar">
+          <span class="mph-dot on" data-phase="0">01 Scatter</span>
+          <span class="mph-sep"></span>
+          <span class="mph-dot" data-phase="1">02 Line</span>
+          <span class="mph-sep"></span>
+          <span class="mph-dot" data-phase="2">03 3D Orbit</span>
+          <span class="mph-sep"></span>
+          <span class="mph-dot" data-phase="3">04 Dock</span>
+        </div>
+      </div>
+      <div class="morph-stage">
+        <div class="morph-ring">
+          ${fleet.map((c, i) => `
+            <div class="morph-card" data-idx="${i}" data-id="${esc(c.id)}">
+              <div class="morph-card-inner">
+                <div class="morph-front">
+                  ${media(coverOf(c), `${c.year} Subaru ${c.model}`, c.body, c.id)}
+                  <div class="tilt-glare"></div>
+                  <div class="morph-front-scrim">
+                    <b>${esc(c.model)}${c.variant?" "+esc(c.variant):""}</b>
+                    <span>${esc(c.year)} · ${ksh(c.price)}</span>
+                  </div>
+                </div>
+                <div class="morph-back">
+                  <div class="morph-back-head">
+                    <span>Telemetry · Dossier</span>
+                    <h4>${esc(c.model)}</h4>
+                  </div>
+                  <ul class="morph-spec-list">
+                    <li><dt>Drivetrain</dt><dd>${esc((c.drive||"").indexOf("Symmetrical")===0?"Symmetrical AWD":(c.drive||"AWD"))}</dd></li>
+                    <li><dt>Odometer</dt><dd>${km(c.mileage)}</dd></li>
+                    <li><dt>Transmission</dt><dd>${esc(c.transmission||"Lineartronic")}</dd></li>
+                    <li><dt>Fuel Type</dt><dd>${esc(c.fuel||"Petrol")}</dd></li>
+                    <li><dt>Price</dt><dd>${ksh(c.price)}</dd></li>
+                  </ul>
+                  <div class="morph-card-flip-cue">Tap or hover to flip · <a href="#/cars/${esc(c.id)}" style="color:var(--brass);text-decoration:underline">Inspect</a></div>
+                </div>
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+      <div style="text-align:center;padding-bottom:12px">
+        <span class="cue" style="position:static;display:inline-flex;writing-mode:horizontal-tb">Scroll to cycle 3D geometry</span>
+      </div>
+    </div>
+  </section>`;
+}
+
+function specRulerHTML() {
+  return `<section class="spec-ruler-sec" aria-label="Specification Gauge">
+    <div class="wrap">
+      <div class="sec-head" style="text-align:center;margin-bottom:0">
+        <div>
+          <span class="tag">Engineering Specifications</span>
+          <h2 class="h-1" style="margin-top:12px" data-split>Precision <span class="gold">By The Millimetre</span></h2>
+          <p class="lede" style="margin:8px auto 0;max-width:54ch">Subaru engineering is calibrated for demanding terrain. Drag the precision gauge to examine key drivetrain tolerances.</p>
+        </div>
+      </div>
+      <div class="ruler-container">
+        <div class="ruler-gauge">
+          <div class="ruler-header">
+            <div>
+              <span class="tag" style="margin-bottom:6px">Active Readout</span>
+              <div class="ruler-metric-name" id="ruler-metric-title">Ground Clearance</div>
+            </div>
+            <div class="ruler-metric-value" id="ruler-metric-val">220 mm</div>
+          </div>
+          <div class="ruler-tape-wrap" id="ruler-tape-wrap">
+            <div class="ruler-needle"></div>
+            <div class="ruler-ticks" id="ruler-ticks"></div>
+          </div>
+          <div class="ruler-tabs">
+            <button class="ruler-tab on" data-metric="clearance" type="button">Ground Clearance</button>
+            <button class="ruler-tab" data-metric="power" type="button">Boxer Turbo Power</button>
+            <button class="ruler-tab" data-metric="awd" type="button">AWD Torque Split</button>
+            <button class="ruler-tab" data-metric="cargo" type="button">Boot Cargo Volume</button>
+            <button class="ruler-tab" data-metric="economy" type="button">Fuel Economy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function tgridStarsHTML() {
+  return `<div class="tgrid-stars" aria-hidden="true">
+    ${Array.from({length: 18}).map((_, i) => {
+      const top = (Math.sin(i * 9.1 + 1) * 45 + 50).toFixed(1);
+      const left = (Math.cos(i * 5.7 + 2) * 45 + 50).toFixed(1);
+      const size = (1.5 + (i % 3) * 1.5).toFixed(1);
+      const dur = (2.2 + (i % 4) * 0.9).toFixed(1);
+      const del = ((i % 5) * 0.6).toFixed(1);
+      return `<div class="stg-star" style="top:${top}%;left:${left}%;width:${size}px;height:${size}px;animation-duration:${dur}s;animation-delay:${del}s"></div>`;
+    }).join("")}
+  </div>`;
+}
+
 function carCard(c){
   const sold = c.status === "SOLD";
   return `<article class="card rv">
+    <div class="tilt-glare"></div>
     <a class="card-media" href="#/cars/${esc(c.id)}" aria-label="${esc(c.year+" Subaru "+c.model)}">
       ${media(coverOf(c), `${c.year} Subaru ${c.model} ${c.variant||""}`, c.body, c.id)}
       ${sold?`<span class="badge badge--sold">Sold</span>`:``}
@@ -223,11 +360,18 @@ function viewHome(){
 
     ${chapter("01","The machine","One featured Subaru, shown the way it deserves to be shown.",HOME_PHOTOS.machine)}
 
-    <!-- ========== FRAME TO FULLSCREEN ========== -->
+    <!-- ========== 3D COCKPIT UNROLL TO FULLSCREEN ========== -->
     ${feat?`
     <section class="stage">
       <div class="stage-pin">
         <div class="shot viewfinder" style="width:38vw;height:42svh">
+          <div class="cockpit-hud">
+            <div class="hud-chip"><b>AWD TORQUE</b><span>60 : 40</span></div>
+            <div class="hud-chip"><b>X-MODE</b><span style="color:#4ADE80">SNOW / DIRT</span></div>
+            <div class="hud-chip"><b>GPS</b><span>NAIROBI 01°17'S</span></div>
+          </div>
+          <div class="hud-target"></div>
+          <div class="tilt-glare"></div>
           ${media(coverOf(feat), `${feat.year} Subaru ${feat.model}`, feat.body, feat.id)}
           <div class="shot-scrim"></div>
           <div class="shot-cap">
@@ -250,7 +394,13 @@ function viewHome(){
       </div>
     </section>`:""}
 
+    <!-- ========== WARP DEPTH TUNNEL ========== -->
+    ${warpPortalHTML()}
+
     ${chapter("02","The collection","Every Subaru on our floor in Nairobi, priced in Kenyan Shillings.",HOME_PHOTOS.collection)}
+
+    <!-- ========== 4-PHASE MORPHING CAROUSEL ========== -->
+    ${fleetMorphHTML(avail)}
 
     <!-- ========== COUNTER-RUNNING RAILS ========== -->
     <section class="rails">
@@ -266,6 +416,9 @@ function viewHome(){
       </div>
     </section>
 
+    <!-- ========== RULER SPEC SCROLLER ========== -->
+    ${specRulerHTML()}
+
     <!-- ========== MARQUEE ========== -->
     <div class="marq">
       <div class="marq-in">
@@ -274,17 +427,19 @@ function viewHome(){
       </div>
     </div>
 
-    <!-- ========== TILTED GRID ========== -->
+    <!-- ========== TILTED GRID WITH FOCUS-PULL & STARFIELD ========== -->
     ${models.length?`
     <section class="section">
-      <div class="wrap">
-        <div class="sec-head">
+      <div class="wrap tgrid-wrap">
+        ${tgridStarsHTML()}
+        <div class="sec-head" style="position:relative;z-index:2">
           <div><span class="tag">By model</span>
             <h2 class="h-1" style="margin-top:12px" data-split>Choose your <span class="gold">Subaru</span></h2></div>
           <a class="btn btn--sm fade-up" href="#/cars">Browse everything <span class="btn-arrow">→</span></a>
         </div>
-        <div class="tgrid">
+        <div class="tgrid" style="position:relative;z-index:2">
           ${models.map(x=>`<a class="tile" href="#/cars?model=${encodeURIComponent(x.m)}">
+            <div class="tilt-glare"></div>
             ${media(coverOf(x.car), x.m, x.car?x.car.body:"SUV", x.m)}
             <span class="tile-in"><b>${esc(x.m)}</b>
               <span>${x.n} available</span>
