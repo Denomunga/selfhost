@@ -12,18 +12,12 @@ const { getDb } = require("../db");
  *  error it fails closed (no session). */
 async function attachSession(req, res, next) {
   const claims = readSession(req);
-  console.log("[SESSION] Request path:", req.path);
-  console.log("[SESSION] Request cookies:", req.cookies);
-  console.log("[SESSION] Claims from token:", claims);
-  
   if (claims) {
     try {
       const user = await getDb().collection("auth_users").findOne(
         { _id: claims.uid },
         { projection: { username: 1, name: 1, role: 1, active: 1 } }
       );
-      console.log("[SESSION] User lookup result:", user ? { username: user.username, active: user.active } : null);
-      
       if (user && user.active) {
         req.session = {
           uid: claims.uid,
@@ -31,15 +25,10 @@ async function attachSession(req, res, next) {
           name: user.name || user.username,
           role: user.role
         };
-        console.log("[SESSION] Session attached:", req.session);
-      } else {
-        console.log("[SESSION] User not found or inactive");
       }
     } catch (e) {
       console.error("[SESSION] lookup failed", e);
     }
-  } else {
-    console.log("[SESSION] No valid session token found");
   }
   next();
 }
