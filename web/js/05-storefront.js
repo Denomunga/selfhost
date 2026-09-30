@@ -130,11 +130,11 @@ const HOME_PHOTOS = {
   collection: "outback-bs.jpg", // Chapter 02: The collection.
   roads: "subaru-story.jpg", // Chapter 03: Kenyan roads.
   zoom: [ // Seven images, in order, for the zoom montage.
-    "outback-legacy.jpg", "outback-wilderness.jpg", "outback-bs.jpg",
+    "Subaru-Crosstrek-XV-Crawford-CDR-Series-Lift-Kit-Tuning-1.jpg", "outback-wilderness.jpg", "outback-bs.jpg",
     "outback-front.jpg", "outback-bt.jpg", "subaru-story.jpg", "subaru-hero.jpg"
   ],
   about: "subaru-story.jpg", // Dealership/about strip.
-  closing: "outback-bt.jpg" // Final homepage image.
+  closing: "IMG_1460-22443-08448.jpg" // Final homepage image.
 };
 
 function homePhoto(file, alt, eager){
