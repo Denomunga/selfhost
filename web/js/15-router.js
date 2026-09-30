@@ -164,6 +164,8 @@ function render(){
   else if(root === "/about")   html = viewAbout();
   else if(root === "/contact") html = viewContact();
   else if(root === "/admin")   {
+    if((seg[1] === "marketing" && seg[2] === "meta") || seg[1] === "meta") ADMIN_TAB = "meta_ads";
+    else if(query.tab) ADMIN_TAB = query.tab;
     console.log("[Router] /admin route, Auth.session:", Auth.session);
     console.log("[Router] DB.canEdit:", DB.canEdit, "DB.uid:", DB.uid);
     html = viewAdmin();

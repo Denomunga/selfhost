@@ -305,6 +305,7 @@ function mountAdmin(){
 function mountAdminBody(){
   bindMoneyActions(document);
   mountAdminLegacy();
+  if(typeof mountAdminMeta === "function") mountAdminMeta();
 }
 
 /* ---------- 42. EXTENDED DATA LAYER ---------- */

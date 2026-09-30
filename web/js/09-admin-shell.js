@@ -105,6 +105,7 @@ const COMMON_FEATURES = Object.values(F);
 
 const ADMIN_NAV = [
   ["", [["overview","Dashboard"]]],
+  ["Marketing", [["meta_ads","Meta Advertising"]]],
   ["Sales", [["orders","Orders"],["invoices","Invoices"],["receipts","Receipts"],
              ["payments","Payments"],["refunds","Refunds & credit notes"],["customers","Customers"]]],
   ["Cash & money", [["registers","Cash registers"],["cashmoves","Cash movements"],["expenses","Expenses"]]],
@@ -171,7 +172,7 @@ function badgeFor(tab){
 function adminBody(){
   const t = ADMIN_TAB;
   const map = {
-    overview:admOverview, orders:admOrders, invoices:admInvoices, receipts:admReceipts,
+    overview:admOverview, meta_ads:admMetaAds, orders:admOrders, invoices:admInvoices, receipts:admReceipts,
     payments:admPayments, refunds:admRefunds, customers:admCustomers,
     registers:admRegisters, cashmoves:admCashMoves, expenses:admExpenses,
     purchases:admPurchases, suppliers:admSuppliers,

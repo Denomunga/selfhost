@@ -45,7 +45,7 @@ const Auth = {
       this.session = {uid:res.user.id, username:res.user.username, role:res.user.role, name:res.user.name};
       DB.canEdit = true; DB.uid = res.user.id; DB.role = res.user.role;
       DB.startPolling();
-      DB.refreshAll().catch(()=>{});
+      await DB.refreshAll().catch(()=>{});
       console.log("[Auth] Sign in successful, session:", this.session);
       return {ok:true, mustChange: !!res.user.mustChange};
     }catch(err){

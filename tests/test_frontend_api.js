@@ -4,7 +4,8 @@ const policy = require('../server/src/policy.js');
 
 const WEB = require('path').join(__dirname, '..', 'web');
 const SCRIPT_FILES = [...fs.readFileSync(WEB + '/index.html', 'utf8')
-  .matchAll(/<script src="([^"]+)"><\/script>/g)].map(m => m[1]);
+  .matchAll(/<script src="([^"]+)"><\/script>/g)].map(m => m[1])
+  .filter(f => !f.startsWith('http://') && !f.startsWith('https://'));
 function loadFrontend(ctx, bridge) {
   // Run each file separately, in page order, exactly as the browser does.
   for (const f of SCRIPT_FILES) vm.runInContext(fs.readFileSync(WEB + '/' + f, 'utf8'), ctx, { filename: f });

@@ -15,6 +15,8 @@ const collectionsRoutes = require("./routes/collections.routes");
 const countersRoutes = require("./routes/counters.routes");
 const eventsRoutes = require("./routes/events.routes");
 const { router: uploadsRouter, blobHandler } = require("./routes/uploads.routes");
+const metaRoutes = require("./routes/meta.routes");
+const { metaAdsService } = require("./services/metaAds.service");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -110,6 +112,7 @@ const apiLimiter = rateLimit({
 app.use("/api", apiLimiter);
 
 app.use("/api/auth", authRoutes);
+app.use("/api/admin/marketing/meta", metaRoutes);
 app.use("/api", collectionsRoutes);
 app.use("/api", countersRoutes);
 app.use("/api", eventsRoutes);
@@ -132,6 +135,7 @@ app.use((err, req, res, next) => { // eslint-disable-line no-unused-vars
 });
 
 connectMongo().then(() => {
+  metaAdsService.startBackgroundSync();
   app.listen(PORT, () => {
     console.log(`Sheriff Motors server listening on http://localhost:${PORT}`);
   });

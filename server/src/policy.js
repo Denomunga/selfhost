@@ -13,8 +13,8 @@
  * the one place to change that; every route funnels through it.
  */
 const PUBLIC_READ = new Set(["cars", "parts", "stories"]);
-const ADMIN_ONLY_READ = new Set(["users", "audit"]);
-const ADMIN_ONLY_WRITE = new Set(["users"]);
+const ADMIN_ONLY_READ = new Set(["users", "audit", "meta_connections", "meta_campaigns", "meta_audiences", "meta_attributions"]);
+const ADMIN_ONLY_WRITE = new Set(["users", "meta_connections", "meta_campaigns", "meta_audiences", "meta_attributions"]);
 
 function readLevel(collection) {
   if (ADMIN_ONLY_READ.has(collection)) return "admin";
@@ -45,7 +45,8 @@ function canWrite(collection, session) {
 const ALL_COLLECTIONS = [
   "cars", "parts", "stories", "inquiries", "customers", "suppliers", "orders",
   "invoices", "receipts", "payments", "refunds", "expenses", "purchases",
-  "registers", "cashmoves", "journal", "audit", "users", "carcost", "partcost"
+  "registers", "cashmoves", "journal", "audit", "users", "carcost", "partcost",
+  "meta_connections", "meta_campaigns", "meta_audiences", "meta_attributions"
 ];
 
 module.exports = { canRead, canWrite, ALL_COLLECTIONS, PUBLIC_READ };

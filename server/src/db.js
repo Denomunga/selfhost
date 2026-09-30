@@ -1,4 +1,5 @@
 "use strict";
+require("dotenv").config({ path: require("path").resolve(__dirname, "../.env") });
 const { MongoClient } = require("mongodb");
 
 const uri = process.env.MONGODB_URI;
@@ -17,7 +18,18 @@ async function connectMongo() {
     database.collection("documents").createIndex({ collection: 1, updated_at: -1 }),
     database.collection("auth_users").createIndex({ username: 1 }, { unique: true }),
     database.collection("counters").createIndex({ _id: 1 }),
-    database.collection("assets").createIndex({ _id: 1 })
+    database.collection("assets").createIndex({ _id: 1 }),
+    // Meta Advertising collections
+    database.collection("meta_connections").createIndex({ dealershipId: 1 }, { unique: true }),
+    database.collection("meta_ad_accounts").createIndex({ accountId: 1 }),
+    database.collection("meta_campaigns").createIndex({ id: 1 }, { unique: true }),
+    database.collection("meta_campaigns").createIndex({ status: 1 }),
+    database.collection("meta_campaigns").createIndex({ carId: 1 }),
+    database.collection("meta_campaign_metrics").createIndex({ campaignId: 1, timestamp: -1 }),
+    database.collection("meta_audiences").createIndex({ id: 1 }, { unique: true }),
+    database.collection("campaign_attributions").createIndex({ campaignId: 1 }),
+    database.collection("campaign_attributions").createIndex({ invoiceId: 1 }),
+    database.collection("campaign_attributions").createIndex({ inquiryId: 1 })
   ]);
   return database;
 }
