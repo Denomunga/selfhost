@@ -95,6 +95,96 @@ function waLink(item){
 
 /* ---------- 6. CARDS ---------- */
 
+function bookFoldHTML() {
+  return `<section class="book-fold" aria-label="Chapter 01 — The Machine">
+    <div class="book-fold-pin">
+      <div class="book-cover top">
+        <div class="book-cover-media">
+          ${homePhoto(HOME_PHOTOS.machine, "Subaru Machine Preview")}
+        </div>
+        <div class="book-cover-scrim"></div>
+        <div class="book-cover-badge">
+          <span class="tag">Edition Dossier</span>
+          <span>Vol. 2026 · Nairobi</span>
+        </div>
+      </div>
+      <div class="book-seam"></div>
+      <div class="book-lines">
+        <div class="book-line" style="top:42%"></div>
+        <div class="book-line" style="top:46%"></div>
+        <div class="book-line" style="top:54%"></div>
+        <div class="book-line" style="top:58%"></div>
+      </div>
+      <div class="book-label">
+        <div class="book-chap-pill">
+          <span class="chap-badge">Chapter 01</span>
+          <span class="chap-edition">First Edition Dossier</span>
+        </div>
+        <h2 class="book-title">THE<br><span class="gold">MACHINE</span></h2>
+        <p class="book-sub">One featured Subaru, shown the way it deserves to be shown.</p>
+        <div class="book-cue">
+          <span>Scroll to unroll chassis</span>
+          <span class="cue-arrow">↓</span>
+        </div>
+      </div>
+      <div class="book-cover bottom">
+        <div class="book-cover-media">
+          ${homePhoto(HOME_PHOTOS.machine, "Subaru Chassis View")}
+        </div>
+        <div class="book-cover-scrim btm"></div>
+      </div>
+    </div>
+  </section>`;
+}
+
+function roadsCurtainHTML() {
+  return `<section class="roads-reveal" aria-label="Chapter 03 — Kenyan Roads">
+    <div class="roads-pin">
+      <div class="roads-bg">
+        ${homePhoto(HOME_PHOTOS.roads, "Kenyan terrain expedition")}
+        <div class="roads-flare"></div>
+      </div>
+      <div class="roads-shutter left">
+        <div class="shutter-inner">
+          <span class="shutter-mark">Symmetrical AWD</span>
+          <div class="shutter-line"></div>
+        </div>
+      </div>
+      <div class="roads-shutter right">
+        <div class="shutter-inner">
+          <span class="shutter-mark">Boxer Engine · 220mm</span>
+          <div class="shutter-line"></div>
+        </div>
+      </div>
+      <div class="roads-content">
+        <div class="roads-tag-row">
+          <span class="chap-badge">Chapter 03</span>
+          <span class="roads-route-pill">Nairobi → Great Rift Valley → Turkana</span>
+        </div>
+        <div class="roads-num-ghost">03</div>
+        <h2 class="roads-title">KENYAN<br><span class="gold">ROADS</span></h2>
+        <p class="roads-quote">“Tarmac ends. The journey does not.”</p>
+        <div class="roads-specs-strip">
+          <div class="roads-spec-item">
+            <span class="roads-spec-label">Terrain Calibration</span>
+            <span class="roads-spec-val">Extreme Mud & Volcanic Rock</span>
+          </div>
+          <div class="roads-spec-div"></div>
+          <div class="roads-spec-item">
+            <span class="roads-spec-label">Chassis Clearance</span>
+            <span class="roads-spec-val">220 mm Standard</span>
+          </div>
+          <div class="roads-spec-div"></div>
+          <div class="roads-spec-item">
+            <span class="roads-spec-label">Drivetrain Lock</span>
+            <span class="roads-spec-val">Full-Time Symmetrical AWD</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>`;
+}
+
 function warpPortalHTML() {
   return `<section class="warp-portal" aria-label="Warp transition">
     <div class="warp-pin">
@@ -358,7 +448,8 @@ function viewHome(){
       </div>
     </section>
 
-    ${chapter("01","The machine","One featured Subaru, shown the way it deserves to be shown.",HOME_PHOTOS.machine)}
+    <!-- ========== CHAPTER 01: 3D BOOK / PORTFOLIO FOLD OPENING ========== -->
+    ${bookFoldHTML()}
 
     <!-- ========== 3D COCKPIT UNROLL TO FULLSCREEN ========== -->
     ${feat?`
@@ -468,7 +559,8 @@ function viewHome(){
       </div>
     </section>` : ""; })()}
 
-    ${chapter("03","Kenyan roads","Tarmac ends. The journey does not.",HOME_PHOTOS.roads)}
+    <!-- ========== CHAPTER 03: THEATER REVEAL (KENYAN ROADS) ========== -->
+    ${roadsCurtainHTML()}
 
     <!-- ========== ZOOM PARALLAX ========== -->
     <section class="zoom">

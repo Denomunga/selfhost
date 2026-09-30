@@ -749,6 +749,364 @@ body.has-cursor.cur-labeled #cur-label{opacity:1;transform:scale(1)}
   50% { opacity: .95; transform: scale(1.15); }
 }
 
+/* ============================================================
+   7. 3D BOOK / PORTFOLIO FOLD OPENING (Chapter 01)
+   ============================================================ */
+.book-fold {
+  position: relative;
+  height: 250vh;
+  background: #05070A;
+}
+.book-fold-pin {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  background: #05070A;
+  perspective: 1800px;
+  transform-style: preserve-3d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.book-cover {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 50%;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+}
+.book-cover.top {
+  top: 0;
+  transform-origin: 50% 100%;
+  z-index: 8;
+  border-bottom: 1px solid rgba(200,162,83,0.35);
+  box-shadow: 0 30px 80px rgba(0,0,0,0.85);
+}
+.book-cover.bottom {
+  bottom: 0;
+  transform-origin: 50% 0%;
+  z-index: 7;
+  border-top: 1px solid rgba(200,162,83,0.35);
+  box-shadow: 0 -30px 80px rgba(0,0,0,0.85);
+}
+.book-cover-media {
+  position: absolute;
+  inset: -10%;
+  width: 120%;
+  height: 200%;
+  pointer-events: none;
+}
+.book-cover.top .book-cover-media { top: 0; }
+.book-cover.bottom .book-cover-media { bottom: 0; }
+.book-cover-media img, .book-cover-media svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.book-cover-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(5,7,10,0.92) 0%, rgba(5,7,10,0.6) 60%, rgba(5,7,10,0.95) 100%);
+  pointer-events: none;
+}
+.book-cover-scrim.btm {
+  background: linear-gradient(to top, rgba(5,7,10,0.92) 0%, rgba(5,7,10,0.6) 60%, rgba(5,7,10,0.95) 100%);
+}
+.book-cover-badge {
+  position: absolute;
+  top: 24px;
+  left: var(--pad);
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: rgba(13,17,23,0.75);
+  border: 1px solid rgba(200,162,83,0.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  font-family: var(--display);
+  font-size: .62rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--mist);
+}
+.book-seam {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  margin-top: -1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(200,162,83,0.95) 30%, #FFFFFF 50%, rgba(200,162,83,0.95) 70%, transparent 100%);
+  box-shadow: 0 0 25px rgba(200,162,83,0.85);
+  z-index: 15;
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+}
+.book-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 14;
+}
+.book-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 5%, rgba(200,162,83,0.4) 50%, transparent 95%);
+  transform-origin: 0% 50%;
+  will-change: transform, opacity;
+}
+.book-label {
+  position: relative;
+  z-index: 12;
+  text-align: center;
+  color: var(--white);
+  padding: 0 var(--pad);
+  max-width: var(--maxw);
+  margin: 0 auto;
+  will-change: transform, opacity;
+  transform-style: preserve-3d;
+}
+.book-chap-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.chap-badge {
+  font-family: var(--display);
+  font-size: .64rem;
+  font-weight: 700;
+  letter-spacing: .32em;
+  text-transform: uppercase;
+  color: var(--brass);
+  background: rgba(200,162,83,0.12);
+  border: 1px solid rgba(200,162,83,0.3);
+  padding: 5px 14px;
+  border-radius: 999px;
+}
+.chap-edition {
+  font-family: var(--display);
+  font-size: .6rem;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: var(--mist);
+}
+.book-title {
+  font-family: var(--display);
+  font-size: clamp(2.8rem, 9vw, 7rem);
+  font-weight: 800;
+  line-height: .92;
+  letter-spacing: -.02em;
+  text-transform: uppercase;
+  text-shadow: 0 0 45px rgba(200,162,83,0.45);
+  margin: 0;
+}
+.book-sub {
+  color: var(--mist);
+  font-size: clamp(.9rem, 1.6vw, 1.25rem);
+  line-height: 1.6;
+  max-width: 48ch;
+  margin: 20px auto 0;
+}
+.book-cue {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+  font-family: var(--display);
+  font-size: .62rem;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--brass);
+}
+.cue-arrow { font-size: 1.1rem; }
+
+/* ============================================================
+   8. CINEMATIC THEATER REVEAL (Chapter 03 — Kenyan Roads)
+   ============================================================ */
+.roads-reveal {
+  position: relative;
+  height: 270vh;
+  background: #05070A;
+}
+.roads-pin {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  background: #05070A;
+  perspective: 1600px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.roads-bg {
+  position: absolute;
+  inset: -8%;
+  will-change: transform;
+}
+.roads-bg img, .roads-bg svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.roads-flare {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 70% 30%, rgba(200,162,83,0.22) 0%, transparent 55%),
+              linear-gradient(to top, rgba(5,7,10,0.94) 0%, rgba(5,7,10,0.3) 45%, rgba(5,7,10,0.7) 100%);
+}
+.roads-shutter {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50.5%;
+  background: #080B10;
+  z-index: 10;
+  will-change: transform;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 0 60px rgba(0,0,0,0.9);
+}
+.roads-shutter.left {
+  left: 0;
+  justify-content: flex-end;
+  border-right: 1px solid rgba(200,162,83,0.35);
+  box-shadow: 10px 0 50px rgba(0,0,0,0.85);
+}
+.roads-shutter.right {
+  right: 0;
+  justify-content: flex-start;
+  border-left: 1px solid rgba(200,162,83,0.35);
+  box-shadow: -10px 0 50px rgba(0,0,0,0.85);
+}
+.shutter-inner {
+  padding: 32px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  opacity: .5;
+}
+.shutter-mark {
+  font-family: var(--display);
+  font-size: .6rem;
+  letter-spacing: .28em;
+  text-transform: uppercase;
+  color: var(--mist);
+}
+.shutter-line {
+  width: 38px;
+  height: 1px;
+  background: var(--brass);
+}
+.roads-content {
+  position: relative;
+  z-index: 15;
+  text-align: center;
+  color: var(--white);
+  padding: 0 var(--pad);
+  max-width: var(--maxw);
+  margin: 0 auto;
+  will-change: transform, opacity;
+}
+.roads-tag-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.roads-route-pill {
+  font-family: var(--display);
+  font-size: .62rem;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--chalk);
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: rgba(13,17,23,0.65);
+  border: 1px solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.roads-num-ghost {
+  font-family: var(--display);
+  font-size: clamp(5.5rem, 18vw, 13rem);
+  font-weight: 800;
+  line-height: .75;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(200,162,83,0.22);
+  letter-spacing: -.03em;
+  margin-bottom: -0.22em;
+  pointer-events: none;
+  filter: drop-shadow(0 0 25px rgba(200,162,83,0.1));
+}
+.roads-title {
+  font-family: var(--display);
+  font-size: clamp(2.6rem, 8.5vw, 6.5rem);
+  font-weight: 800;
+  line-height: .92;
+  letter-spacing: -.02em;
+  text-transform: uppercase;
+  margin: 0;
+  text-shadow: 0 0 50px rgba(0,0,0,0.85);
+}
+.roads-quote {
+  font-family: var(--display);
+  font-size: clamp(1.15rem, 2.4vw, 1.85rem);
+  font-style: italic;
+  font-weight: 400;
+  color: var(--white);
+  letter-spacing: .02em;
+  margin: 22px auto 0;
+  max-width: 38ch;
+  text-shadow: 0 2px 16px rgba(0,0,0,0.8);
+}
+.roads-specs-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(14px, 2.5vw, 32px);
+  margin-top: 36px;
+  flex-wrap: wrap;
+}
+.roads-spec-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.roads-spec-label {
+  font-family: var(--display);
+  font-size: .56rem;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--mist);
+}
+.roads-spec-val {
+  font-family: var(--display);
+  font-size: .88rem;
+  font-weight: 700;
+  color: var(--brass);
+  letter-spacing: .06em;
+}
+.roads-spec-div {
+  width: 1px;
+  height: 24px;
+  background: rgba(255,255,255,0.14);
+}
+
 @media(prefers-reduced-motion:reduce){
   .grain{animation:none;opacity:.03}
   .cue::after{animation:none}
@@ -763,8 +1121,10 @@ body.has-cursor.cur-labeled #cur-label{opacity:1;transform:scale(1)}
   .zf>div{width:100%!important;height:auto!important;left:0!important;top:0!important;aspect-ratio:16/9}
   .rail,.marq-in{transform:none!important}
   .bar{display:none}
-  .warp-portal, .fleet-morph { height: auto; }
-  .warp-pin, .morph-pin { position: relative; height: auto; }
+  .warp-portal, .fleet-morph, .book-fold, .roads-reveal { height: auto; }
+  .warp-pin, .morph-pin, .book-fold-pin, .roads-pin { position: relative; height: auto; }
   .warp-halo, .warp-flash, .morph-ring { transform: none !important; opacity: 1 !important; }
   .morph-card { position: relative !important; transform: none !important; margin: 12px auto; }
+  .roads-shutter { display: none !important; }
+  .book-cover { position: relative !important; transform: none !important; height: auto !important; }
 }
