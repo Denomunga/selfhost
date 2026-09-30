@@ -33,7 +33,8 @@ const Smooth = {
     if(!this.on) return;
     const d = this.target - this.cur;
     if(Math.abs(d) < 0.35){ if(this.cur !== this.target){ this.cur = this.target; window.scrollTo(0, this.cur); } return; }
-    this.cur = lerp(this.cur, this.target, 0.098);
+    const factor = clamp(0.088 + Math.abs(d) * 0.000035, 0.088, 0.125);
+    this.cur = lerp(this.cur, this.target, factor);
     window.scrollTo(0, this.cur);
   }
 };
@@ -128,33 +129,139 @@ function mountCounters(root){
   observers.push(io);
 }
 
-/* --- custom cursor --- */
+/* --- procedural mechanical audio ambiance (default off) --- */
+const AudioFX = {
+  ctx: null, on: false, humGain: null, droneOscs: null,
+  init(){
+    const pill = $("#sound-pill"), state = $("#sound-state");
+    if(!pill || pill.dataset.wired) return;
+    pill.dataset.wired = "1";
+    pill.addEventListener("click", () => this.toggle());
+    document.addEventListener("click", e => {
+      if(this.on && e.target && e.target.closest && e.target.closest("a,button,.tile,.rail-card,.card,.model-chip,.cat-chip")) {
+        this.click();
+      }
+    });
+  },
+  ensure(){
+    if(!this.ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if(AC) this.ctx = new AC();
+    }
+    if(this.ctx && this.ctx.state === "suspended") this.ctx.resume();
+  },
+  toggle(){
+    this.ensure();
+    this.on = !this.on;
+    const pill = $("#sound-pill"), state = $("#sound-state");
+    if(pill) pill.classList.toggle("on", this.on);
+    if(state) state.textContent = this.on ? "SOUND ON" : "SOUND OFF";
+    if(this.on) {
+      this.click();
+      this.startDrone();
+    } else {
+      this.stopDrone();
+    }
+  },
+  click(){
+    if(!this.ctx) return;
+    try {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(1400, this.ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(320, this.ctx.currentTime + 0.024);
+      gain.gain.setValueAtTime(0.08, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.024);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start();
+      osc.stop(this.ctx.currentTime + 0.026);
+    } catch(e){}
+  },
+  startDrone(){
+    if(!this.ctx || this.humGain) return;
+    try {
+      const osc1 = this.ctx.createOscillator();
+      const osc2 = this.ctx.createOscillator();
+      const filter = this.ctx.createBiquadFilter();
+      this.humGain = this.ctx.createGain();
+      osc1.type = "sawtooth";
+      osc1.frequency.setValueAtTime(42, this.ctx.currentTime);
+      osc2.type = "sine";
+      osc2.frequency.setValueAtTime(84, this.ctx.currentTime);
+      filter.type = "lowpass";
+      filter.frequency.setValueAtTime(120, this.ctx.currentTime);
+      this.humGain.gain.setValueAtTime(0.001, this.ctx.currentTime);
+      this.humGain.gain.linearRampToValueAtTime(0.022, this.ctx.currentTime + 1.2);
+      osc1.connect(filter);
+      osc2.connect(filter);
+      filter.connect(this.humGain);
+      this.humGain.connect(this.ctx.destination);
+      osc1.start();
+      osc2.start();
+      this.droneOscs = [osc1, osc2];
+    } catch(e){}
+  },
+  stopDrone(){
+    if(this.humGain && this.ctx) {
+      try {
+        this.humGain.gain.linearRampToValueAtTime(0.0001, this.ctx.currentTime + 0.35);
+        setTimeout(() => {
+          if(this.droneOscs) this.droneOscs.forEach(o => { try{ o.stop(); }catch(e){} });
+          this.humGain = null;
+          this.droneOscs = null;
+        }, 400);
+      } catch(e){ this.humGain = null; }
+    }
+  }
+};
+
+/* --- custom cursor with contextual HUD labels --- */
 let CUR = null;
-const HOT = "a,button,.tile,.rail-card,.card,.story-card,input,select,textarea,[role=button]";
+const HOT = "a,button,.tile,.rail-card,.card,.story-card,.model-chip,.cat-chip,input,select,textarea,[role=button]";
 function mountCursor(){
   if(COARSE() || REDUCED()) return;
   const ring = $("#cur"), dot = $("#cur-dot");
   if(!ring || !dot) return;
   if(!CUR){
-    // listeners bind once for the life of the page; delegation means
-    // anything rendered later gets the hover treatment for free
-    CUR = {mx:innerWidth/2, my:innerHeight/2, rx:innerWidth/2, ry:innerHeight/2};
+    CUR = {mx:innerWidth/2, my:innerHeight/2, rx:innerWidth/2, ry:innerHeight/2, nx:0, ny:0, tnx:0, tny:0};
     document.body.classList.add("has-cursor");
     window.addEventListener("mousemove", e => {
       CUR.mx = e.clientX; CUR.my = e.clientY;
+      CUR.tnx = ((e.clientX / window.innerWidth) - 0.5) * 2;
+      CUR.tny = ((e.clientY / window.innerHeight) - 0.5) * 2;
       dot.style.transform = `translate(${e.clientX}px,${e.clientY}px)`;
     }, {passive:true});
     document.addEventListener("mouseover", e => {
-      if(e.target.closest && e.target.closest(HOT)) document.body.classList.add("cur-hot");
+      const t = e.target;
+      if(!t || !t.closest) return;
+      if(t.closest(HOT)) document.body.classList.add("cur-hot");
+      const label = $("#cur-label");
+      if(!label) return;
+      if(t.closest(".shot,.viewfinder")){
+        label.textContent = "SPEC";
+        document.body.classList.add("cur-labeled");
+      } else if(t.closest(".rail-card,.tile,.card")){
+        label.textContent = "EXPLORE";
+        document.body.classList.add("cur-labeled");
+      } else if(t.closest(".btn--wa")){
+        label.textContent = "CHAT";
+        document.body.classList.add("cur-labeled");
+      } else {
+        document.body.classList.remove("cur-labeled");
+      }
     });
     document.addEventListener("mouseout", e => {
-      if(e.target.closest && e.target.closest(HOT)) document.body.classList.remove("cur-hot");
+      if(e.target.closest && e.target.closest(HOT)){
+        document.body.classList.remove("cur-hot", "cur-labeled");
+      }
     });
+    AudioFX.init();
   }
-  // the ring trails the dot on its own spring, inside the one loop.
-  // re-registered every render because FX.clear() empties the timeline.
   FX.add(ring, () => {
     CUR.rx = lerp(CUR.rx, CUR.mx, 0.16); CUR.ry = lerp(CUR.ry, CUR.my, 0.16);
+    CUR.nx = lerp(CUR.nx, CUR.tnx, 0.08); CUR.ny = lerp(CUR.ny, CUR.tny, 0.08);
     ring.style.transform = `translate(${CUR.rx.toFixed(1)}px,${CUR.ry.toFixed(1)}px)`;
   });
 }
@@ -184,14 +291,16 @@ function runPreloader(){
 
 /* --- per-section wiring, called after each render --- */
 function mountCinema(){
-  // hero depth planes
+  // hero depth planes with mouse 3D perspective
   $$(".cine").forEach(stage => {
     const planes = $$(".plane", stage), copy = $(".cine-copy", stage), cue = $(".cue", stage);
     FX.add(stage, (r, vh) => {
       const p = stageP(r, vh);
+      const rotY = CUR ? (CUR.nx * 2.8).toFixed(2) : "0";
+      const rotX = CUR ? (-CUR.ny * 2.0).toFixed(2) : "0";
       planes.forEach(pl => {
         const d = parseFloat(pl.dataset.depth || 0.2);
-        pl.style.transform = `translate3d(0,${(-p * vh * d * 0.85).toFixed(1)}px,0) scale(${(1 + p * d * 0.22).toFixed(4)})`;
+        pl.style.transform = `translate3d(0,${(-p * vh * d * 0.85).toFixed(1)}px,0) rotateY(${rotY}deg) rotateX(${rotX}deg) scale(${(1 + p * d * 0.22).toFixed(4)})`;
       });
       if(copy){
         copy.style.transform = `translate3d(0,${(-p * 180).toFixed(1)}px,0)`;
@@ -262,7 +371,7 @@ function mountCinema(){
     });
   });
 
-  // zoom parallax: seven plates, one scroll arc, independent rates
+  // zoom parallax: seven plates, dynamic depth of field
   $$(".zoom").forEach(z => {
     const frames = $$(".zf", z);
     const rates = [4.2, 5.4, 6.4, 5.0, 6.9, 8.2, 7.4];
@@ -270,7 +379,10 @@ function mountCinema(){
       const p = stageP(r, vh);
       const ease = p * p;
       frames.forEach((f, i) => {
-        f.style.transform = `scale(${(1 + ease * (rates[i % rates.length] - 1)).toFixed(4)})`;
+        const s = 1 + ease * (rates[i % rates.length] - 1);
+        const b = clamp((s - 2.2) * 1.6, 0, 7);
+        f.style.transform = `scale(${s.toFixed(4)})`;
+        f.style.filter = b > 0.3 ? `blur(${b.toFixed(1)}px)` : "";
       });
       return p > 0.04 && p < 0.96 ? "scope" : null;
     });

@@ -42,9 +42,15 @@
 
 /* ---- letterbox bars: close during pinned chapters ---- */
 .bar{position:fixed;left:0;right:0;height:0;background:#000;z-index:148;pointer-events:none;
-  transition:height .8s cubic-bezier(.76,0,.24,1)}
+  transition:height .8s cubic-bezier(.76,0,.24,1);overflow:hidden}
 .bar.t{top:0} .bar.b{bottom:0}
 body.scope .bar{height:clamp(26px,5.4vh,74px)}
+.bar.t::after{content:"";position:absolute;bottom:0;left:-50%;width:200%;height:2px;
+  background:linear-gradient(90deg, transparent 0%, rgba(200,162,83,.2) 25%, rgba(120,210,255,.65) 50%, rgba(200,162,83,.2) 75%, transparent 100%);
+  box-shadow:0 0 12px rgba(120,210,255,.5);opacity:0;transition:opacity .8s ease;
+  animation:flareDrift 8s ease-in-out infinite}
+body.scope .bar.t::after{opacity:1}
+@keyframes flareDrift{0%,100%{transform:translateX(-10%)} 50%{transform:translateX(10%)}}
 
 /* ---- containment: 55 vector frames, only paint the visible ones ---- */
 .card-media,.story-media,.rail-card,.tile{content-visibility:auto}
@@ -61,12 +67,32 @@ body.scope .bar{height:clamp(26px,5.4vh,74px)}
 .cur,.cur-dot{position:fixed;top:0;left:0;z-index:190;pointer-events:none;border-radius:50%;
   mix-blend-mode:difference;opacity:0;transition:opacity .4s}
 .cur{width:38px;height:38px;border:1px solid #fff;margin:-19px 0 0 -19px;
+  display:flex;align-items:center;justify-content:center;
   transition:width .35s cubic-bezier(.2,.7,.2,1),height .35s cubic-bezier(.2,.7,.2,1),
-             margin .35s cubic-bezier(.2,.7,.2,1),opacity .4s,background .35s}
+             margin .35s cubic-bezier(.2,.7,.2,1),opacity .4s,background .35s,border-color .35s,box-shadow .35s}
 .cur-dot{width:5px;height:5px;background:#fff;margin:-2.5px 0 0 -2.5px}
 body.has-cursor .cur,body.has-cursor .cur-dot{opacity:1}
-body.has-cursor.cur-hot .cur{width:74px;height:74px;margin:-37px 0 0 -37px;background:rgba(255,255,255,.14)}
+body.has-cursor.cur-hot .cur{width:70px;height:70px;margin:-35px 0 0 -35px;background:rgba(255,255,255,.12);border-color:rgba(200,162,83,.7);box-shadow:0 0 16px rgba(200,162,83,.3)}
+#cur-label{font-family:var(--display);font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:#fff;
+  opacity:0;transform:scale(.7);transition:opacity .25s ease,transform .25s ease;font-weight:800;pointer-events:none}
+body.has-cursor.cur-labeled #cur-label{opacity:1;transform:scale(1)}
 @media(hover:none),(pointer:coarse){.cur,.cur-dot{display:none}}
+
+/* Minimal audio ambiance pill */
+.sound-pill{position:fixed;right:clamp(16px,2.5vw,36px);bottom:clamp(16px,2.5vw,36px);z-index:160;
+  display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;
+  background:rgba(13,17,23,.75);border:1px solid rgba(255,255,255,.14);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  color:var(--chalk);font-family:var(--display);font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;
+  cursor:pointer;transition:all .3s ease;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+.sound-pill:hover{border-color:var(--brass);color:var(--white);transform:translateY(-2px)}
+.sound-pill.on{border-color:var(--brass);background:rgba(200,162,83,.15);color:var(--brass)}
+.sound-wave{display:inline-flex;align-items:center;gap:2px;height:10px}
+.sound-wave i{width:2px;height:3px;background:currentColor;border-radius:1px;transition:height .2s ease}
+.sound-pill.on .sound-wave i:nth-child(1){animation:waveBar .8s ease-in-out infinite}
+.sound-pill.on .sound-wave i:nth-child(2){animation:waveBar .8s ease-in-out infinite .2s}
+.sound-pill.on .sound-wave i:nth-child(3){animation:waveBar .8s ease-in-out infinite .4s}
+@keyframes waveBar{0%,100%{height:3px}50%{height:11px}}
 
 /* ---- split-text reveal ---- */
 .ln{display:block;overflow:hidden}
