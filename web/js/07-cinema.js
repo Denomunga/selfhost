@@ -499,7 +499,10 @@ function mountCinema(){
         if(!page) return;
         const angle = -110 * amount;
         const depth = -300 * amount;
+        const fade = clamp((amount - 0.82) / 0.18, 0, 1);
+        const fadeEase = fade * fade * (3 - 2 * fade);
         page.style.transform = `translateZ(${depth.toFixed(1)}px) rotateX(${angle.toFixed(2)}deg)`;
+        page.style.opacity = String((1 - fadeEase).toFixed(3));
       };
       const turnDuration = 0.38;
       setTurn(titlePage, turn(0.06, 0.06 + turnDuration));
