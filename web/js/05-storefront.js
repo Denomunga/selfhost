@@ -95,48 +95,52 @@ function waLink(item){
 
 /* ---------- 6. CARDS ---------- */
 
-function bookFoldHTML() {
+function bookFoldHTML(feat) {
+  const featureImage = feat
+    ? media(coverOf(feat), `${feat.year} Subaru ${feat.model}`, feat.body, feat.id)
+    : homePhoto(HOME_PHOTOS.machine, "Subaru Machine", true);
   return `<section class="book-fold" aria-label="Chapter 01 — The Machine">
     <div class="book-fold-pin">
-      <!-- Full image lives BEHIND the covers — revealed as top cover folds back -->
-      <div class="book-bg">
-        ${homePhoto(HOME_PHOTOS.machine, "Subaru Machine", true)}
-        <div class="book-bg-scrim"></div>
-      </div>
-
-      <!-- Seam & kinetic lines -->
-      <div class="book-seam"></div>
-      <div class="book-lines">
-        <div class="book-line" style="top:20%"></div>
-        <div class="book-line" style="top:32%"></div>
-        <div class="book-line" style="top:68%"></div>
-        <div class="book-line" style="top:80%"></div>
-      </div>
-
-      <!-- Label floats up through the seam -->
-      <div class="book-label">
-        <div class="book-chap-pill">
-          <span class="chap-badge">Chapter 01</span>
-          <span class="chap-edition">First Edition Dossier</span>
-        </div>
-        <h2 class="book-title">THE<br><span class="gold">MACHINE</span></h2>
-        <p class="book-sub">One featured Subaru, shown the way it deserves to be shown.</p>
-        <div class="book-cue">
-          <span>Scroll to unroll chassis</span>
-          <span class="cue-arrow">↓</span>
+      <div class="book-preview" aria-hidden="true">
+        <div class="book-preview-media">${featureImage}</div>
+        <div class="book-preview-shade"></div>
+        <div class="book-preview-copy">
+          <span>Chapter 01 · Featured Chassis</span>
+          <h2>${esc(feat ? feat.model : "The Machine")} <b>${esc(feat ? feat.variant || "" : "")}</b></h2>
+          <p>${feat ? `${esc(feat.year)} · ${ksh(feat.price)}` : "First Edition Dossier · Nairobi"}</p>
         </div>
       </div>
 
-      <!-- Top cover: solid dark panel, folds backward on scroll to reveal image -->
-      <div class="book-cover top">
-        <div class="book-cover-badge">
-          <span class="tag">Edition Dossier</span>
+      <div class="book-sheet book-sheet--image" aria-hidden="true">
+        <div class="book-image-media">${featureImage}</div>
+        <div class="book-image-shade"></div>
+        <div class="book-image-label">
+          <span>Edition Dossier</span>
           <span>Vol. 2026 · Nairobi</span>
         </div>
       </div>
 
-      <!-- Bottom cover: solid dark panel, rotates up into flat view -->
-      <div class="book-cover bottom"></div>
+      <div class="book-sheet book-sheet--title">
+        <div class="dossier-topline">
+          <span>Chapter 01</span>
+          <span>First Edition Dossier</span>
+        </div>
+        <div class="dossier-center">
+          <p class="dossier-kicker">Sheriff Motors · Nairobi</p>
+          <h2 class="book-title">THE<br><span>MACHINE</span></h2>
+          <p class="book-sub">One featured Subaru, shown the way it deserves to be shown.</p>
+        </div>
+        <div class="dossier-footer">
+          <div class="book-cue">
+            <span>Scroll to unroll chassis</span>
+            <span class="cue-arrow">↓</span>
+          </div>
+          <div class="dossier-edition">
+            <span>Edition Dossier</span>
+            <span>Vol. 2026 · Nairobi</span>
+          </div>
+        </div>
+      </div>
     </div>
   </section>`;
 }
@@ -485,7 +489,7 @@ function viewHome(){
     </section>
 
     <!-- ========== CHAPTER 01: 3D BOOK / PORTFOLIO FOLD OPENING ========== -->
-    ${bookFoldHTML()}
+    ${bookFoldHTML(feat)}
 
     <!-- ========== 3D COCKPIT UNROLL TO FULLSCREEN ========== -->
     ${feat?`

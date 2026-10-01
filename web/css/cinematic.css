@@ -1062,6 +1062,183 @@ body.has-cursor.cur-labeled #cur-label{opacity:1;transform:scale(1)}
 }
 .cue-arrow { font-size: 1.1rem; }
 
+/* Chapter 01 dossier sheets: two full pages turn from the upper-right corner. */
+.book-fold-pin {
+  perspective: 1800px;
+  isolation: isolate;
+}
+.book-preview,
+.book-sheet {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.book-preview { z-index: 1; background: #090B0E; }
+.book-preview-media,
+.book-image-media {
+  position: absolute;
+  inset: 0;
+}
+.book-preview-media img,
+.book-preview-media svg,
+.book-image-media img,
+.book-image-media svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+}
+.book-preview-shade,
+.book-image-shade {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(4,6,9,.82), rgba(4,6,9,.12) 76%),
+              linear-gradient(0deg, rgba(4,6,9,.42), transparent 50%);
+}
+.book-preview-copy {
+  position: absolute;
+  left: max(var(--pad), calc((100vw - var(--maxw)) / 2));
+  bottom: clamp(44px, 10vh, 112px);
+  max-width: min(760px, calc(100% - 2 * var(--pad)));
+  color: var(--white);
+}
+.book-preview-copy > span,
+.book-image-label,
+.dossier-topline,
+.dossier-kicker,
+.dossier-edition,
+.book-cue {
+  font-family: var(--display);
+  font-size: .64rem;
+  font-weight: 700;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+}
+.book-preview-copy > span { color: var(--brass); }
+.book-preview-copy h2 {
+  margin: 14px 0 0;
+  font-family: var(--display);
+  font-size: clamp(2.3rem, 7vw, 6rem);
+  font-weight: 800;
+  line-height: .94;
+  text-transform: uppercase;
+}
+.book-preview-copy h2 b { color: var(--brass); }
+.book-preview-copy p { margin: 14px 0 0; color: rgba(255,255,255,.76); }
+.book-sheet {
+  z-index: 3;
+  transform-origin: 100% 0%;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  will-change: transform;
+  box-shadow: 0 22px 70px rgba(0,0,0,.38);
+}
+.book-sheet::before {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 0;
+  width: clamp(72px, 13vw, 176px);
+  aspect-ratio: 1;
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+  background: linear-gradient(225deg, rgba(255,255,255,.96), rgba(255,255,255,.48) 48%, rgba(22,20,12,.24));
+  filter: drop-shadow(-7px 8px 8px rgba(0,0,0,.18));
+}
+.book-sheet--image { z-index: 2; color: #fff; }
+.book-image-shade {
+  background: linear-gradient(0deg, rgba(4,6,9,.65), transparent 38%, rgba(4,6,9,.12));
+}
+.book-image-label {
+  position: absolute;
+  left: var(--pad);
+  right: var(--pad);
+  bottom: clamp(30px, 6vh, 66px);
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  color: #fff;
+  text-shadow: 0 2px 15px rgba(0,0,0,.8);
+}
+.book-sheet--title {
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(24px, 5vh, 58px) var(--pad) clamp(24px, 5vh, 58px);
+  color: #17170E;
+  background-color: #D9B83F;
+  background-image: radial-gradient(ellipse at 18% 8%, rgba(255,244,164,.46), transparent 42%),
+                    linear-gradient(118deg, rgba(121,85,8,.06), transparent 48%, rgba(255,249,192,.2));
+}
+.book-sheet--title::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .2;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.12'/%3E%3C/svg%3E");
+}
+.dossier-topline,
+.dossier-footer {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+.dossier-topline { color: rgba(23,23,14,.72); }
+.dossier-topline span:first-child { color: #17170E; }
+.dossier-center {
+  position: relative;
+  z-index: 1;
+  width: min(760px, 100%);
+  margin: auto;
+  text-align: center;
+}
+.dossier-kicker { margin: 0 0 18px; color: rgba(23,23,14,.66); }
+.book-sheet--title .book-title {
+  color: #17170E;
+  font-size: clamp(3.3rem, 13vw, 10.5rem);
+  line-height: .82;
+  letter-spacing: 0;
+  text-shadow: 0 2px 0 rgba(255,247,180,.22);
+}
+.book-sheet--title .book-title span { color: #F5E78F; }
+.book-sheet--title .book-sub {
+  max-width: 36ch;
+  margin: clamp(18px, 3vh, 30px) auto 0;
+  color: rgba(23,23,14,.78);
+  font-size: clamp(1rem, 1.8vw, 1.3rem);
+}
+.dossier-footer { align-items: flex-end; }
+.book-sheet--title .book-cue {
+  gap: 10px;
+  margin: 0;
+  color: #17170E;
+}
+.book-sheet--title .cue-arrow { font-size: 1.25rem; }
+.dossier-edition {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  color: rgba(23,23,14,.72);
+  text-align: right;
+}
+@media(max-width:600px) {
+  .dossier-topline,
+  .book-image-label { font-size: .56rem; letter-spacing: .14em; }
+  .dossier-topline { align-items: flex-start; }
+  .dossier-topline span:last-child { text-align: right; }
+  .dossier-footer { align-items: flex-start; flex-direction: column; }
+  .dossier-edition { align-items: flex-start; text-align: left; }
+  .book-image-label { flex-direction: column; }
+}
+
 /* ============================================================
    8. CINEMATIC THEATER REVEAL (Chapter 03 — Kenyan Roads)
    ============================================================ */
@@ -1261,7 +1438,8 @@ body.has-cursor.cur-labeled #cur-label{opacity:1;transform:scale(1)}
   .warp-halo, .warp-flash, .morph-ring { transform: none !important; opacity: 1 !important; }
   .morph-card { position: relative !important; transform: none !important; margin: 12px auto; }
   .roads-shutter { display: none !important; }
-  .book-bg { transform: none !important; }
-  .book-cover { transform: none !important; height: 50% !important; }
-  .book-cover.top { opacity: 0; }   /* show full image, hide folded covers */
+  .book-fold-pin { position: relative; height: auto; min-height: 100svh; overflow: visible; perspective: none; }
+  .book-preview, .book-sheet--image { display: none; }
+  .book-sheet--title { position: relative; inset: auto; min-height: 100svh; transform: none !important; }
+  .book-sheet--title::before { display: none; }
 }

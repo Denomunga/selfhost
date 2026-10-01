@@ -482,72 +482,30 @@ function mountCinema(){
     });
   });
 
-  // 3D book / portfolio fold opening (Chapter 01 — The Machine)
+  // Sequential page turns: dossier cover, featured image, then chassis still.
   $$(".book-fold").forEach(bf => {
-    const top   = $(".book-cover.top", bf);
-    const btm   = $(".book-cover.bottom", bf);
-    const seam  = $(".book-seam", bf);
-    const lines = $$(".book-line", bf);
-    const label = $(".book-label", bf);
-    const bg    = $(".book-bg",    bf);   // full image layer behind covers
+    const titlePage = $(".book-sheet--title", bf);
+    const imagePage = $(".book-sheet--image", bf);
+    const preview = $(".book-preview", bf);
 
     FX.add(bf, (r, vh) => {
       const p = stageP(r, vh);
+      const turn = (start, end) => {
+        const t = clamp((p - start) / (end - start), 0, 1);
+        return t * t * (3 - 2 * t);
+      };
+      const setTurn = (page, amount) => {
+        if(!page) return;
+        const angle = -154 * amount;
+        const lift = 42 * amount;
+        page.style.transform = `rotateY(${angle.toFixed(2)}deg) rotateX(${lift.toFixed(2)}deg) translateZ(${(amount * -70).toFixed(1)}px)`;
+      };
 
-      // Seam ignites along the horizon
-      if(seam){
-        const so = clamp(p < 0.25 ? p / 0.25 : (p > 0.82 ? 1 - (p - 0.82) / 0.15 : 1), 0, 1);
-        const ss = clamp(p / 0.28, 0, 1);
-        seam.style.transform = `scaleX(${ss.toFixed(3)})`;
-        seam.style.opacity = String(so.toFixed(3));
-      }
-
-      // Kinetic lines sweep across
-      lines.forEach((ln, i) => {
-        const offset = i * 0.05;
-        const lp = clamp((p - offset) / 0.35, 0, 1);
-        const lo = p > 0.8 ? clamp(1 - (p - 0.8) / 0.15, 0, 1) : lp;
-        ln.style.transform = `scaleX(${lp.toFixed(3)})`;
-        ln.style.opacity = String((lo * 0.45).toFixed(3));
-      });
-
-      // Top cover folds backward in 3D perspective
-      if(top){
-        const tp = clamp((p - 0.08) / 0.65, 0, 1);
-        const ease = tp * tp;
-        const rotX = lerp(0, -112, ease);
-        const tz = lerp(0, -320, ease);
-        const op = clamp(1 - tp * 0.9, 0.1, 1);
-        top.style.transform = `perspective(1800px) rotateX(${rotX.toFixed(2)}deg) translateZ(${tz.toFixed(1)}px)`;
-        top.style.opacity = String(op.toFixed(2));
-      }
-
-      // Chapter typography floats up out of opening seam
-      if(label){
-        const lp = clamp((p - 0.18) / 0.45, 0, 1);
-        const ease = 1 - Math.pow(1 - lp, 3);
-        const s = lerp(0.86, 1.05, ease);
-        const ty = lerp(60, 0, ease);
-        const op = p < 0.18 ? 0 : (p > 0.78 ? clamp(1 - (p - 0.78) / 0.18, 0, 1) : ease);
-        label.style.transform = `translate3d(0,${ty.toFixed(1)}px,0) scale(${s.toFixed(3)})`;
-        label.style.opacity = String(op.toFixed(2));
-      }
-
-      // Bottom page rotates into flat view
-      if(btm){
-        const bp = clamp((p - 0.58) / 0.35, 0, 1);
-        const ease = 1 - Math.pow(1 - bp, 3);
-        const rotX = lerp(75, 0, ease);
-        const op = lerp(0.4, 1, ease);
-        btm.style.transform = `perspective(1800px) rotateX(${rotX.toFixed(2)}deg)`;
-        btm.style.opacity = String(op.toFixed(2));
-      }
-
-      // Background image depth-reveal: scale from 1.05 → 1.0 as covers fold open
-      if(bg){
-        const reveal = clamp((p - 0.08) / 0.6, 0, 1);
-        const sc = lerp(1.05, 1.0, reveal);
-        bg.style.transform = `scale(${sc.toFixed(4)})`;
+      setTurn(titlePage, turn(0.06, 0.52));
+      setTurn(imagePage, turn(0.52, 0.98));
+      if(preview){
+        const reveal = turn(0.52, 0.98);
+        preview.style.transform = `scale(${(1.035 - reveal * 0.035).toFixed(4)})`;
       }
 
       return p > 0.04 && p < 0.96 ? "scope" : null;
