@@ -476,7 +476,16 @@ function viewHome(){
           ${media(coverOf(feat), `${feat.year} Subaru ${feat.model}`, feat.body, feat.id)}
           <div class="featured-still-shade"></div>
           <div class="featured-still-actions">
-            <h2>${esc(feat.year)} Subaru ${esc(feat.model)} <span>${esc(feat.variant||"")}</span></h2>
+            <div class="featured-still-copy">
+              <span class="featured-still-tag">Chassis Dossier · Featured</span>
+              <h2>${esc(feat.year)} Subaru ${esc(feat.model)} <span>${esc(feat.variant||"")}</span></h2>
+              <dl class="featured-still-specs">
+                <div><dt>Year</dt><dd>${esc(feat.year)}</dd></div>
+                <div><dt>Price</dt><dd>${ksh(feat.price)}</dd></div>
+                <div><dt>Odometer</dt><dd>${km(feat.mileage)}</dd></div>
+                <div><dt>Drive</dt><dd>${esc((feat.drive||"").indexOf("Symmetrical")===0?"AWD":(feat.drive||"—"))}</dd></div>
+              </dl>
+            </div>
             <div class="btn-row">
               <a class="btn btn--solid" href="#/cars/${esc(feat.id)}">View vehicle <span class="btn-arrow">→</span></a>
               <a class="btn btn--wa" href="${waLink(feat)}" target="_blank" rel="noopener">Chat on WhatsApp <span class="btn-arrow">→</span></a>
