@@ -29,7 +29,7 @@ function navHTML(route){
   <div class="menu" id="menu">
     <div class="menu-head">
       <span class="tag">Showroom Directory</span>
-      <span class="spec-chip">Subaru · Kenya</span>
+      <button class="menu-close" id="menu-close" type="button" aria-label="Close directory">×</button>
     </div>
     <nav class="menu-nav">
       ${NAV.map(([h,l], i)=>{

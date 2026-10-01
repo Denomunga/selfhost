@@ -184,14 +184,21 @@ p{margin:0 0 1em}
                    radial-gradient(circle at 15% 85%, rgba(13,17,23,.85) 0%, transparent 50%);
   transform:translateY(-100%);transition:transform .55s cubic-bezier(.76,0,.24,1);
   display:flex;flex-direction:column;
-  padding:calc(var(--nav-h) + env(safe-area-inset-top,0px) + 8px) clamp(18px,4vw,32px) clamp(20px,4vh,36px);
-  overflow-y:auto}
+  padding:calc(env(safe-area-inset-top,0px) + 16px)
+    calc(clamp(18px,4vw,32px) + env(safe-area-inset-right,0px))
+    calc(env(safe-area-inset-bottom,0px) + 20px)
+    calc(clamp(18px,4vw,32px) + env(safe-area-inset-left,0px));
+  overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .menu.open{transform:translateY(0)}
 
 .menu-head{display:flex;align-items:center;justify-content:space-between;gap:12px;
-  padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:6px}
+  padding-bottom:14px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:10px;flex:0 0 auto}
+.menu-close{width:42px;height:42px;flex:0 0 auto;display:grid;place-items:center;
+  border:1px solid var(--rule-strong);background:rgba(255,255,255,.04);color:var(--white);
+  font-size:1.5rem;line-height:1;cursor:pointer;transition:background .2s,border-color .2s}
+.menu-close:hover{background:rgba(255,255,255,.12);border-color:var(--brass)}
 
-.menu-nav{display:flex;flex-direction:column;gap:3px}
+.menu-nav{display:flex;flex:0 0 auto;flex-direction:column;gap:3px}
 
 .menu-link{display:flex;align-items:center;gap:14px;padding:11px 12px;border-radius:6px;
   font-family:var(--display);font-size:clamp(1.15rem,5.5vw,1.6rem);font-weight:800;
@@ -213,7 +220,7 @@ p{margin:0 0 1em}
 .menu-link.on .menu-label{color:var(--white)}
 .menu-link.on .menu-idx{color:var(--brass)}
 
-.menu-foot{margin-top:auto;padding-top:18px;display:flex;flex-direction:column;gap:10px}
+.menu-foot{flex:0 0 auto;margin-top:auto;padding-top:18px;display:flex;flex-direction:column;gap:10px}
 .menu-foot .btn{width:100%;justify-content:center}
 
 /* ---- hero ---- */

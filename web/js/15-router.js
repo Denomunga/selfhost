@@ -118,7 +118,7 @@ function revealAll(root){
 }
 
 function mountChrome(){
-  const nav = $("#nav"), menu = $("#menu"), burger = $("#burger");
+  const nav = $("#nav"), menu = $("#menu"), burger = $("#burger"), menuClose = $("#menu-close");
   const onScroll = ()=>{ if(nav) nav.classList.toggle("solid", window.scrollY > 40); };
   onScroll();
   window.addEventListener("scroll", onScroll, {passive:true});
@@ -130,6 +130,10 @@ function mountChrome(){
       burger.setAttribute("aria-expanded", open ? "true" : "false");
       document.body.style.overflow = open ? "hidden" : "";
       if(open) $$("#menu a").forEach((a,i)=>a.style.transitionDelay = (0.06*i + 0.1) + "s");
+    });
+    if(menuClose) menuClose.addEventListener("click", ()=>{
+      menu.classList.remove("open"); burger.classList.remove("x");
+      burger.setAttribute("aria-expanded", "false"); document.body.style.overflow = "";
     });
     $$("#menu a").forEach(a=>a.addEventListener("click", ()=>{
       menu.classList.remove("open"); burger.classList.remove("x");

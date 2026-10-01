@@ -1406,6 +1406,11 @@ body.has-cursor.cur-labeled #cur-label{opacity:1;transform:scale(1)}
     object-position:center;
   }
 
+  .plane--bg img,
+  .outro-bg img{
+    object-fit:cover;
+  }
+
   .plane,
   .featured-still,
   .book-image-media,
