@@ -95,15 +95,11 @@ function waLink(item){
 
 /* ---------- 6. CARDS ---------- */
 
-function bookFoldHTML(feat) {
-  const featureImage = media(coverOf(feat), `${feat.year} Subaru ${feat.model}`, feat.body, feat.id);
+function bookFoldHTML() {
+  const chapterImage = homePhoto(HOME_PHOTOS.machine, "Chapter 01 featured Subaru", true);
   return `<div class="book-sheet book-sheet--image" aria-hidden="true">
-    <div class="book-image-media">${featureImage}</div>
+    <div class="book-image-media">${chapterImage}</div>
     <div class="book-image-shade"></div>
-    <div class="book-image-label">
-      <span>Edition Dossier</span>
-      <span>Vol. 2026 · Nairobi</span>
-    </div>
   </div>
 
   <div class="book-sheet book-sheet--title">
@@ -472,49 +468,22 @@ function viewHome(){
       </div>
     </section>
 
-    <!-- ========== CHAPTER 01: DOSSIER PAGES REVEAL THE FEATURED CHASSIS ========== -->
+    <!-- ========== CHAPTER 01: DOSSIER PAGES REVEAL THE FEATURED CAR ========== -->
     ${feat?`
     <section class="stage">
       <div class="stage-pin">
-        ${bookFoldHTML(feat)}
-
-        <!-- Title hovers above the tilted frame, fades out as it expands -->
-        <div class="stage-title">
-          <span class="chap-badge" style="display:inline-flex;margin-bottom:12px">Chapter 01 · Featured Chassis</span>
-          <h2 class="h-1">${esc(feat.model)} <span class="gold">${esc(feat.variant||"")}</span></h2>
-          <p class="lede" style="margin:12px auto 0;max-width:42ch;opacity:.75">${esc(feat.year)} · ${ksh(feat.price)}</p>
-        </div>
-
-        <!-- The frame: starts tilted with gold border, unrolls to fullscreen -->
-        <div class="shot">
-          <div class="shot-inner">
-            <div class="cockpit-hud">
-              <div class="hud-chip"><b>AWD TORQUE</b><span>60 : 40</span></div>
-              <div class="hud-chip"><b>X-MODE</b><span style="color:#4ADE80">SNOW / DIRT</span></div>
-              <div class="hud-chip"><b>GPS</b><span>NAIROBI 01°17'S</span></div>
-            </div>
-            <div class="hud-target"></div>
-            <div class="tilt-glare"></div>
-            ${media(coverOf(feat), `${feat.year} Subaru ${feat.model}`, feat.body, feat.id)}
-            <div class="shot-scrim"></div>
-            <div class="shot-cap">
-              <div style="max-width:var(--maxw);margin:0 auto">
-                <span class="tag">Chassis Dossier · Featured</span>
-                <h2 class="h-1" style="margin:12px 0 0">${esc(feat.model)} <span class="gold">${esc(feat.variant||"")}</span></h2>
-                <dl class="shot-meta">
-                  <div><dt>Year</dt><dd>${esc(feat.year)}</dd></div>
-                  <div><dt>Price</dt><dd>${ksh(feat.price)}</dd></div>
-                  <div><dt>Odometer</dt><dd>${km(feat.mileage)}</dd></div>
-                  <div><dt>Drive</dt><dd>${esc((feat.drive||"").indexOf("Symmetrical")===0?"AWD":(feat.drive||"—"))}</dd></div>
-                </dl>
-                <div class="btn-row" style="margin-top:28px">
-                  <a class="btn btn--solid" href="#/cars/${esc(feat.id)}">View vehicle <span class="btn-arrow">→</span></a>
-                  <a class="btn btn--wa" href="${waLink(feat)}" target="_blank" rel="noopener">Chat on WhatsApp <span class="btn-arrow">→</span></a>
-                </div>
-              </div>
+        <div class="featured-still">
+          ${media(coverOf(feat), `${feat.year} Subaru ${feat.model}`, feat.body, feat.id)}
+          <div class="featured-still-shade"></div>
+          <div class="featured-still-actions">
+            <h2>${esc(feat.year)} Subaru ${esc(feat.model)} <span>${esc(feat.variant||"")}</span></h2>
+            <div class="btn-row">
+              <a class="btn btn--solid" href="#/cars/${esc(feat.id)}">View vehicle <span class="btn-arrow">→</span></a>
+              <a class="btn btn--wa" href="${waLink(feat)}" target="_blank" rel="noopener">Chat on WhatsApp <span class="btn-arrow">→</span></a>
             </div>
           </div>
         </div>
+        ${bookFoldHTML()}
       </div>
     </section>`:""}
 
