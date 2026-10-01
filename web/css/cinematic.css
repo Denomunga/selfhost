@@ -1383,3 +1383,37 @@ body.has-cursor.cur-labeled #cur-label{opacity:1;transform:scale(1)}
   .roads-shutter { display: none !important; }
   .book-sheet { display: none; }
 }
+
+@media(max-width:760px){
+  .plane img,
+  .featured-still > img,
+  .book-image-media img,
+  .chap-bg img,
+  .rail-card img,
+  .tile img,
+  .zf img,
+  .outro-bg img,
+  .roads-bg img,
+  .card-media img,
+  .story-media img,
+  .split-media img,
+  .v-hero [data-par] img,
+  .vcine-media img,
+  .gal-main img,
+  .gal-strip img,
+  .morph-front img{
+    object-fit:contain;
+    object-position:center;
+  }
+
+  .plane,
+  .featured-still,
+  .book-image-media,
+  .chap-bg,
+  .roads-bg,
+  .outro-bg,
+  .v-hero [data-par],
+  .vcine-media{
+    background:var(--ink);
+  }
+}
