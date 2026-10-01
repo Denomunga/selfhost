@@ -497,13 +497,13 @@ function mountCinema(){
       };
       const setTurn = (page, amount) => {
         if(!page) return;
-        const angle = -180 * amount;
-        const lift = 12 * amount;
-        page.style.transform = `translate3d(${(amount * 100).toFixed(1)}%,0,${(amount * -18).toFixed(1)}px) rotateY(${angle.toFixed(2)}deg) rotateX(${lift.toFixed(2)}deg)`;
+        const angle = -110 * amount;
+        const depth = -300 * amount;
+        page.style.transform = `translateZ(${depth.toFixed(1)}px) rotateX(${angle.toFixed(2)}deg)`;
       };
-      const turnDuration = 0.24;
-      setTurn(titlePage, turn(0.08, 0.08 + turnDuration));
-      setTurn(imagePage, turn(0.48, 0.48 + turnDuration));
+      const turnDuration = 0.38;
+      setTurn(titlePage, turn(0.06, 0.06 + turnDuration));
+      setTurn(imagePage, turn(0.50, 0.50 + turnDuration));
 
       return p > 0.04 && p < 0.98 ? "scope" : null;
     });
