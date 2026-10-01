@@ -441,8 +441,7 @@ function mountCinema(){
       // 3-plane depth parallax with gyroscopic tilt
       planes.forEach(pl => {
         const d = parseFloat(pl.dataset.depth || 0.2);
-        const scrollTravel = window.matchMedia("(max-width: 760px)").matches ? 0.4 : 0.85;
-        pl.style.transform = `translate3d(${(nx * d * 18).toFixed(1)}px,${(-p * vh * d * scrollTravel + ny * d * 12).toFixed(1)}px,0) rotateY(${rotY}deg) rotateX(${rotX}deg) scale(${(1 + p * d * 0.22).toFixed(4)})`;
+        pl.style.transform = `translate3d(${(nx * d * 18).toFixed(1)}px,${(-p * vh * d * 0.85 + ny * d * 12).toFixed(1)}px,0) rotateY(${rotY}deg) rotateX(${rotX}deg) scale(${(1 + p * d * 0.22).toFixed(4)})`;
       });
 
       // Volumetric ray canopy — cursor sway + scroll fade

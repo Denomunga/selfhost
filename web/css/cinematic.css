@@ -1385,7 +1385,6 @@ body.has-cursor.cur-labeled #cur-label{opacity:1;transform:scale(1)}
 }
 
 @media(max-width:760px){
-  .plane img,
   .featured-still > img,
   .book-image-media img,
   .chap-bg img,
@@ -1406,7 +1405,6 @@ body.has-cursor.cur-labeled #cur-label{opacity:1;transform:scale(1)}
     object-position:center;
   }
 
-  .plane--bg img,
   .outro-bg img{
     object-fit:cover;
   }
