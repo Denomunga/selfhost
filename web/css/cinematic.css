@@ -70,7 +70,7 @@ body.has-cursor.cur-labeled #cur-label{opacity:1;transform:scale(1)}
 @media(hover:none),(pointer:coarse){.cur,.cur-dot{display:none}}
 
 /* Minimal audio ambiance pill */
-.sound-pill{position:fixed;right:clamp(16px,2.5vw,36px);bottom:clamp(16px,2.5vw,36px);z-index:160;
+.sound-pill{position:fixed;right:calc(clamp(16px,2.5vw,36px) + env(safe-area-inset-right,0px));bottom:calc(clamp(16px,2.5vw,36px) + env(safe-area-inset-bottom,0px));z-index:160;
   display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;
   background:rgba(13,17,23,.75);border:1px solid rgba(255,255,255,.14);
   backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
