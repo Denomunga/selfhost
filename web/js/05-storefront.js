@@ -821,10 +821,10 @@ function setupLiveSearch(opts){
       return;
     }
 
-    let html = "";
+    let carHtml = "";
     if(matchedCars.length){
-      html += `<div class="srch-group-label">Vehicles</div>`;
-      html += matchedCars.map(c => {
+      carHtml += `<div class="srch-group-label">Vehicles</div>`;
+      carHtml += matchedCars.map(c => {
         const isSold = c.status === "SOLD";
         const badge = isSold ? `<span class="pill pill--bad">Sold</span>` : `<span class="pill pill--ok">Available</span>`;
         return `
@@ -842,9 +842,10 @@ function setupLiveSearch(opts){
       }).join("");
     }
 
+    let partHtml = "";
     if(matchedParts.length){
-      html += `<div class="srch-group-label">Spares &amp; Parts</div>`;
-      html += matchedParts.map(p => {
+      partHtml += `<div class="srch-group-label">Spares &amp; Parts</div>`;
+      partHtml += matchedParts.map(p => {
         const st = partStock(p);
         return `
           <a class="srch-item" href="#/parts/${esc(p.id)}">
@@ -861,7 +862,7 @@ function setupLiveSearch(opts){
       }).join("");
     }
 
-    drop.innerHTML = html;
+    drop.innerHTML = opts.partsFirst ? partHtml + carHtml : carHtml + partHtml;
     drop.hidden = false;
   }
 
@@ -988,6 +989,7 @@ function mountParts(){
     inputId: "#pf-q",
     dropId: "#psrch-drop",
     clearId: "#psrch-clear",
+    partsFirst: true,
     onFilter: (q) => {
       PFILTER.q = q;
       renderPartGrid();
