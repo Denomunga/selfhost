@@ -3,39 +3,33 @@
 
 function viewLogin(){
   const s = DB.s;
-  return `<main class="auth">
+  return `<main class="auth auth--login">
     <div class="auth-art">
       <div class="vcine-media" data-par="60">${frameSVG({kind:"side",env:"nairobi",body:"Wagon",seed:"login",alt:""})}</div>
       <div class="cine-scrim"></div>
       <div class="auth-art-in">
-        <span class="tag">${esc(s.dealership)}</span>
-        <h2 class="h-2" style="margin-top:14px;max-width:14ch">Staff access to the shop floor.</h2>
-        <p class="muted" style="max-width:38ch;margin-top:14px">Inventory, invoices, payments and the till — all behind one sign-in.</p>
+        <span class="tag auth-art-tag">${esc(s.dealership)}</span>
+        <h2 class="h-2 auth-art-title">Staff access to the shop floor.</h2>
+        <p class="muted auth-art-copy">Inventory, invoices, payments and the till — all behind one sign-in.</p>
       </div>
     </div>
     <div class="auth-panel">
       <div class="auth-box">
-        <a class="brand" href="#/" style="margin-bottom:34px">${markSubaru(32)}<span><b>${esc(s.dealership)}</b><small>Subaru · Kenya</small></span></a>
-        <span class="tag">Sign in</span>
-        <h1 class="h-2" style="margin:12px 0 26px">Welcome back</h1>
-        <form id="login-form" class="form-grid">
-          <div class="field full"><label for="lg-user">Username or email</label>
+        <a class="brand auth-brand" href="#/">${markSubaru(32)}<span><b>${esc(s.dealership)}</b><small>Subaru · Kenya</small></span></a>
+        <span class="tag auth-tag">Sign in</span>
+        <h1 class="h-2 auth-title">Welcome back</h1>
+        <form id="login-form" class="form-grid auth-form">
+          <div class="field full auth-field"><label for="lg-user">Username or email</label>
             <input id="lg-user" autocomplete="username" required autocapitalize="none" spellcheck="false"></div>
-          <div class="field full"><label for="lg-pass">Password</label>
+          <div class="field full auth-field"><label for="lg-pass">Password</label>
             <div class="pw-wrap">
               <input id="lg-pass" type="password" autocomplete="current-password" required>
               <button type="button" class="pw-eye" id="lg-eye" aria-label="Show password">Show</button>
             </div></div>
           <div class="full" id="lg-msg" style="display:none"></div>
-          <div class="full"><button class="btn btn--solid" type="submit" id="lg-go" style="width:100%">Sign in</button></div>
+          <div class="full"><button class="btn btn--solid auth-submit" type="submit" id="lg-go">Sign in</button></div>
         </form>
-        <p class="muted" style="font-size:.8rem;margin-top:26px;line-height:1.7">
-          Signing in unlocks the dashboard on this device. What each account is allowed to
-          <em style="font-style:normal;color:var(--chalk)">change</em> is enforced by the server on top of this,
-          not by this form.</p>
-        <p class="muted" style="font-size:.8rem;margin-top:10px">No public sign-up — an administrator
-          creates staff accounts from Users &amp; Roles once they're signed in.</p>
-        <a class="crumb" href="#/" style="margin-top:18px">← Back to the website</a>
+        <a class="crumb auth-back" href="#/">← Back to the website</a>
       </div>
     </div>
   </main>`;

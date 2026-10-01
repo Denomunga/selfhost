@@ -74,7 +74,7 @@ function footHTML(){
       </ul></div>
     </div>
     <div class="foot-base">
-      <span>© ${new Date().getFullYear()} ${esc(s.dealership)}. Demonstration inventory — prices are illustrative.</span>
+      <span>© ${new Date().getFullYear()} ${esc(s.dealership)}.</span>
       <span>All prices in Kenyan Shillings (KSh).</span>
     </div>
   </div></footer>`;
