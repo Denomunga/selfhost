@@ -504,7 +504,7 @@ function mountCinema(){
         page.style.transform = `translateZ(${depth.toFixed(1)}px) rotateX(${angle.toFixed(2)}deg)`;
         page.style.opacity = String((1 - fadeEase).toFixed(3));
       };
-      const turnDuration = 0.38;
+      const turnDuration = 0.44;
       setTurn(titlePage, turn(0.06, 0.06 + turnDuration));
       setTurn(imagePage, turn(0.50, 0.50 + turnDuration));
 
