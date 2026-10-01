@@ -482,41 +482,13 @@ function mountCinema(){
     });
   });
 
-  // Sequential page turns: dossier cover, featured image, then chassis still.
-  $$(".book-fold").forEach(bf => {
-    const titlePage = $(".book-sheet--title", bf);
-    const imagePage = $(".book-sheet--image", bf);
-    const preview = $(".book-preview", bf);
-
-    FX.add(bf, (r, vh) => {
-      const p = stageP(r, vh);
-      const turn = (start, end) => {
-        const t = clamp((p - start) / (end - start), 0, 1);
-        return t * t * (3 - 2 * t);
-      };
-      const setTurn = (page, amount) => {
-        if(!page) return;
-        const angle = -154 * amount;
-        const lift = 42 * amount;
-        page.style.transform = `rotateY(${angle.toFixed(2)}deg) rotateX(${lift.toFixed(2)}deg) translateZ(${(amount * -70).toFixed(1)}px)`;
-      };
-
-      setTurn(titlePage, turn(0.06, 0.52));
-      setTurn(imagePage, turn(0.52, 0.98));
-      if(preview){
-        const reveal = turn(0.52, 0.98);
-        preview.style.transform = `scale(${(1.035 - reveal * 0.035).toFixed(4)})`;
-      }
-
-      return p > 0.04 && p < 0.96 ? "scope" : null;
-    });
-  });
-
   // FrameToFullscreen: tilted gold-border frame → smooth fullscreen reveal
   $$(".stage").forEach(stage => {
     const shot      = $(".shot",        stage);
     const shotInner = $(".shot-inner",  stage);
     const titleEl   = $(".stage-title", stage);
+    const titlePage = $(".book-sheet--title", stage);
+    const imagePage = $(".book-sheet--image", stage);
     const hud       = $(".cockpit-hud", stage);
     const cap       = $(".shot-cap",    stage);
 
@@ -538,10 +510,25 @@ function mountCinema(){
       const vw = window.innerWidth || 1280;
       getScales(vw, vh);
 
+      const turn = (start, end) => {
+        const t = clamp((p - start) / (end - start), 0, 1);
+        return t * t * (3 - 2 * t);
+      };
+      const setTurn = (page, amount) => {
+        if(!page) return;
+        const angle = -154 * amount;
+        const lift = 42 * amount;
+        page.style.transform = `rotateY(${angle.toFixed(2)}deg) rotateX(${lift.toFixed(2)}deg) translateZ(${(amount * -70).toFixed(1)}px)`;
+      };
+      setTurn(titlePage, turn(0.06, 0.24));
+      setTurn(imagePage, turn(0.24, 0.42));
+
+      const chassisP = clamp((p - 0.42) / 0.58, 0, 1);
+
       // Phase 1 (0 → 0.5): frame tilts up + zooms slightly
       // Phase 3 (0.7 → 1.0): flattens fully to fullscreen
-      const phase1 = clamp(p / 0.5, 0, 1);
-      const phase3 = clamp((p - 0.7) / 0.3, 0, 1);
+      const phase1 = clamp(chassisP / 0.5, 0, 1);
+      const phase3 = clamp((chassisP - 0.7) / 0.3, 0, 1);
       const ease3  = 1 - Math.pow(1 - phase3, 3);   // cubic ease-out
 
       const rotX   = lerp(lerp(26, 15, phase1), 0, ease3);
@@ -560,20 +547,20 @@ function mountCinema(){
 
       // Phase 2 (0.5 → 0.7): title drifts out
       if(titleEl){
-        const t2 = clamp((p - 0.5) / 0.2, 0, 1);
+        const t2 = clamp((chassisP - 0.5) / 0.2, 0, 1);
         titleEl.style.opacity   = (1 - t2).toFixed(2);
         titleEl.style.transform = `translateX(-50%) translateY(${(-t2 * 60).toFixed(1)}px)`;
       }
 
       // HUD fades early
       if(hud){
-        hud.style.opacity   = clamp(1 - p * 2.4, 0, 1).toFixed(2);
-        hud.style.transform = `translateY(${(-p * 50).toFixed(1)}px)`;
+        hud.style.opacity   = clamp(1 - chassisP * 2.4, 0, 1).toFixed(2);
+        hud.style.transform = `translateY(${(-chassisP * 50).toFixed(1)}px)`;
       }
 
       // Caption reveals at fullscreen
       if(cap){
-        const o = clamp((p - 0.75) / 0.18, 0, 1);
+        const o = clamp((chassisP - 0.75) / 0.18, 0, 1);
         cap.style.opacity   = o.toFixed(2);
         cap.style.transform = `translate3d(0,${((1 - o) * 40).toFixed(1)}px,0)`;
       }

@@ -871,148 +871,7 @@ body.has-cursor.cur-labeled #cur-label{opacity:1;transform:scale(1)}
   50% { opacity: .95; transform: scale(1.15); }
 }
 
-/* ============================================================
-   7. 3D BOOK / PORTFOLIO FOLD OPENING (Chapter 01)
-   ============================================================ */
-.book-fold {
-  position: relative;
-  height: 280vh;
-  background: #05070A;
-}
-.book-fold-pin {
-  position: sticky;
-  top: 0;
-  height: 100svh;
-  overflow: hidden;
-  background: #05070A;
-  perspective: 2000px;
-  transform-style: preserve-3d;
-}
-
-/* Full image lives here — behind both covers, always full viewport */
-.book-bg {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  overflow: hidden;
-}
-.book-bg img, .book-bg svg {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  display: block;
-  transform: scale(1.05); /* slight over-scale for parallax headroom */
-}
-/* Atmospheric scrim over the background image */
-.book-bg-scrim {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse at 50% 60%, rgba(200,162,83,0.12) 0%, transparent 55%),
-    linear-gradient(to bottom, rgba(5,7,10,0.55) 0%, rgba(5,7,10,0.2) 50%, rgba(5,7,10,0.65) 100%);
-}
-
-.book-cover {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 50%;
-  z-index: 8;
-  transform-style: preserve-3d;
-  will-change: transform, opacity;
-  /* Solid dark cover — hides the image until it folds back */
-  background: #07090D;
-}
-.book-cover.top {
-  top: 0;
-  transform-origin: 50% 100%;
-  border-bottom: 1px solid rgba(200,162,83,0.4);
-  box-shadow: 0 30px 80px rgba(0,0,0,0.9);
-}
-.book-cover.bottom {
-  bottom: 0;
-  transform-origin: 50% 0%;
-  z-index: 7;
-  border-top: 1px solid rgba(200,162,83,0.4);
-  box-shadow: 0 -30px 80px rgba(0,0,0,0.9);
-  background: #09090F;
-}
-/* Subtle grain texture on covers */
-.book-cover::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-  pointer-events: none;
-  opacity: 0.5;
-}
-.book-cover-badge {
-  position: absolute;
-  top: 24px;
-  left: var(--pad);
-  z-index: 10;
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  padding: 6px 14px;
-  border-radius: 999px;
-  background: rgba(13,17,23,0.75);
-  border: 1px solid rgba(200,162,83,0.25);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  font-family: var(--display);
-  font-size: .62rem;
-  letter-spacing: .2em;
-  text-transform: uppercase;
-  color: var(--mist);
-}
-.book-seam {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  height: 2px;
-  margin-top: -1px;
-  background: linear-gradient(90deg, transparent 0%, rgba(200,162,83,0.95) 30%, #FFFFFF 50%, rgba(200,162,83,0.95) 70%, transparent 100%);
-  box-shadow: 0 0 25px rgba(200,162,83,0.85);
-  z-index: 15;
-  transform-origin: 50% 50%;
-  will-change: transform, opacity;
-}
-.book-lines {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 14;
-}
-.book-line {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent 5%, rgba(200,162,83,0.4) 50%, transparent 95%);
-  transform-origin: 0% 50%;
-  will-change: transform, opacity;
-}
-.book-label {
-  position: relative;
-  z-index: 12;
-  text-align: center;
-  color: var(--white);
-  padding: 0 var(--pad);
-  max-width: var(--maxw);
-  margin: 0 auto;
-  will-change: transform, opacity;
-  transform-style: preserve-3d;
-}
-.book-chap-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-}
+/* Chapter 01 dossier sheets turn away to reveal the featured chassis stage. */
 .chap-badge {
   font-family: var(--display);
   font-size: .64rem;
@@ -1024,13 +883,6 @@ body.has-cursor.cur-labeled #cur-label{opacity:1;transform:scale(1)}
   border: 1px solid rgba(200,162,83,0.3);
   padding: 5px 14px;
   border-radius: 999px;
-}
-.chap-edition {
-  font-family: var(--display);
-  font-size: .6rem;
-  letter-spacing: .24em;
-  text-transform: uppercase;
-  color: var(--mist);
 }
 .book-title {
   font-family: var(--display);
@@ -1062,25 +914,22 @@ body.has-cursor.cur-labeled #cur-label{opacity:1;transform:scale(1)}
 }
 .cue-arrow { font-size: 1.1rem; }
 
-/* Chapter 01 dossier sheets: two full pages turn from the upper-right corner. */
-.book-fold-pin {
+/* Two full pages turn from the upper-right corner. */
+.stage-pin {
   perspective: 1800px;
   isolation: isolate;
 }
-.book-preview,
 .book-sheet {
   position: absolute;
   inset: 0;
   overflow: hidden;
+  z-index: 30;
+  pointer-events: none;
 }
-.book-preview { z-index: 1; background: #090B0E; }
-.book-preview-media,
 .book-image-media {
   position: absolute;
   inset: 0;
 }
-.book-preview-media img,
-.book-preview-media svg,
 .book-image-media img,
 .book-image-media svg {
   width: 100%;
@@ -1089,21 +938,12 @@ body.has-cursor.cur-labeled #cur-label{opacity:1;transform:scale(1)}
   object-fit: cover;
   object-position: center;
 }
-.book-preview-shade,
 .book-image-shade {
   position: absolute;
   inset: 0;
   background: linear-gradient(90deg, rgba(4,6,9,.82), rgba(4,6,9,.12) 76%),
               linear-gradient(0deg, rgba(4,6,9,.42), transparent 50%);
 }
-.book-preview-copy {
-  position: absolute;
-  left: max(var(--pad), calc((100vw - var(--maxw)) / 2));
-  bottom: clamp(44px, 10vh, 112px);
-  max-width: min(760px, calc(100% - 2 * var(--pad)));
-  color: var(--white);
-}
-.book-preview-copy > span,
 .book-image-label,
 .dossier-topline,
 .dossier-kicker,
@@ -1115,19 +955,7 @@ body.has-cursor.cur-labeled #cur-label{opacity:1;transform:scale(1)}
   letter-spacing: .22em;
   text-transform: uppercase;
 }
-.book-preview-copy > span { color: var(--brass); }
-.book-preview-copy h2 {
-  margin: 14px 0 0;
-  font-family: var(--display);
-  font-size: clamp(2.3rem, 7vw, 6rem);
-  font-weight: 800;
-  line-height: .94;
-  text-transform: uppercase;
-}
-.book-preview-copy h2 b { color: var(--brass); }
-.book-preview-copy p { margin: 14px 0 0; color: rgba(255,255,255,.76); }
 .book-sheet {
-  z-index: 3;
   transform-origin: 100% 0%;
   transform-style: preserve-3d;
   backface-visibility: hidden;
@@ -1147,7 +975,7 @@ body.has-cursor.cur-labeled #cur-label{opacity:1;transform:scale(1)}
   background: linear-gradient(225deg, rgba(255,255,255,.96), rgba(255,255,255,.48) 48%, rgba(22,20,12,.24));
   filter: drop-shadow(-7px 8px 8px rgba(0,0,0,.18));
 }
-.book-sheet--image { z-index: 2; color: #fff; }
+.book-sheet--image { z-index: 30; color: #fff; }
 .book-image-shade {
   background: linear-gradient(0deg, rgba(4,6,9,.65), transparent 38%, rgba(4,6,9,.12));
 }
@@ -1163,7 +991,7 @@ body.has-cursor.cur-labeled #cur-label{opacity:1;transform:scale(1)}
   text-shadow: 0 2px 15px rgba(0,0,0,.8);
 }
 .book-sheet--title {
-  z-index: 3;
+  z-index: 31;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -1433,13 +1261,10 @@ body.has-cursor.cur-labeled #cur-label{opacity:1;transform:scale(1)}
   .zf>div{width:100%!important;height:auto!important;left:0!important;top:0!important;aspect-ratio:16/9}
   .rail,.marq-in{transform:none!important}
   .bar{display:none}
-  .warp-portal, .fleet-morph, .book-fold, .roads-reveal { height: auto; }
-  .warp-pin, .morph-pin, .book-fold-pin, .roads-pin { position: relative; height: auto; }
+  .warp-portal, .fleet-morph, .roads-reveal { height: auto; }
+  .warp-pin, .morph-pin, .roads-pin { position: relative; height: auto; }
   .warp-halo, .warp-flash, .morph-ring { transform: none !important; opacity: 1 !important; }
   .morph-card { position: relative !important; transform: none !important; margin: 12px auto; }
   .roads-shutter { display: none !important; }
-  .book-fold-pin { position: relative; height: auto; min-height: 100svh; overflow: visible; perspective: none; }
-  .book-preview, .book-sheet--image { display: none; }
-  .book-sheet--title { position: relative; inset: auto; min-height: 100svh; transform: none !important; }
-  .book-sheet--title::before { display: none; }
+  .book-sheet { display: none; }
 }
