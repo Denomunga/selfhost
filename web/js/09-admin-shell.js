@@ -192,9 +192,38 @@ function tbl(cols, rows, emptyMsg){
       : `<tr><td colspan="${cols.length}" class="muted" style="padding:44px;text-align:center">${esc(emptyMsg||"Nothing here yet.")}</td></tr>`}
     </tbody></table></div>`;
 }
+function adminDailySeries(records, dateOf, valueOf, days = 7){
+  const end = Date.parse(`${dayKey(todayISO())}T00:00:00Z`);
+  const points = Array.from({length:days}, (_, i)=>{
+    const date = new Date(end - (days - 1 - i) * 86400000);
+    return {key:date.toISOString().slice(0,10), label:date.toLocaleDateString("en-KE", {day:"numeric",month:"short"}), value:0};
+  });
+  const byDay = new Map(points.map(point=>[point.key,point]));
+  records.forEach(record=>{
+    const point = byDay.get(dayKey(dateOf(record)));
+    if(point) point.value += Number(valueOf(record))||0;
+  });
+  return points;
+}
+function adminMiniTrend(trend, label){
+  if(!trend || !trend.points || !trend.points.length) return "";
+  const values = trend.points.map(point=>Math.max(0,Number(point.value)||0));
+  const max = Math.max(1,...values);
+  const coords = values.map((value,i)=>({x:3+i*(66/Math.max(1,values.length-1)),y:27-(value/max)*22}));
+  const line = coords.map(point=>`${point.x.toFixed(1)},${point.y.toFixed(1)}`).join(" ");
+  const previous = values.slice(0,Math.ceil(values.length/2)).reduce((sum,value)=>sum+value,0);
+  const recent = values.slice(Math.ceil(values.length/2)).reduce((sum,value)=>sum+value,0);
+  const direction = recent>previous ? (trend.invert?"down":"up") : recent<previous ? (trend.invert?"up":"down") : "steady";
+  const title = `${label}: ${trend.points.map(point=>`${point.label} ${point.value}`).join(", ")}`;
+  return `<svg class="stat-spark ${direction}" viewBox="0 0 72 32" role="img" aria-label="${esc(label)} daily trend for the last ${values.length} days" title="${esc(title)}">
+    <title>${esc(title)}</title><polyline points="${line}"/>
+    ${coords.map((point,i)=>`<circle cx="${point.x.toFixed(1)}" cy="${point.y.toFixed(1)}" r="1.7"><title>${esc(trend.points[i].label)}: ${values[i]===0?"0":esc(ksh(values[i]))}</title></circle>`).join("")}
+  </svg>`;
+}
 function statGrid(items){
-  return `<div class="stats">${items.map(([l,v,sub])=>`<div class="stat">
-    <b class="num">${v}</b><span>${esc(l)}</span>
+  const hasTrends = items.some(item=>item[3]);
+  return `<div class="stats ${hasTrends?"stats--trends":""}">${items.map(([l,v,sub,trend])=>`<div class="stat ${trend?"stat--trend":""}">
+    <div class="stat-main"><div><b class="num">${v}</b><span>${esc(l)}</span></div>${adminMiniTrend(trend,l)}</div>
     ${sub?`<em class="stat-sub">${esc(sub)}</em>`:""}</div>`).join("")}</div>`;
 }
 function toolbar(title, buttons, right){

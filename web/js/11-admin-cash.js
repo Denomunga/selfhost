@@ -137,7 +137,8 @@ function admExpenses(){
   const byCat = EXPENSE_CATS.map(c=>[c, list.filter(x=>x.category===c).reduce((s,x)=>s+(Number(x.amount)||0),0)])
     .filter(x=>x[1] > 0).sort((a,b)=>b[1]-a[1]);
   return `${toolbar("Expenses", `<button class="btn btn--sm btn--solid" id="q-expense">Record expense</button>`)}
-    ${statGrid([["Entries", list.length], ["Total out", ksh(total)],
+    ${statGrid([["Entries", list.length, "", {points:adminDailySeries(list,x=>x.date,()=>1)}],
+      ["Total out", ksh(total), "", {points:adminDailySeries(list,x=>x.date,x=>x.amount),invert:true}],
       ["Largest category", byCat.length ? byCat[0][0] : "—", byCat.length ? ksh(byCat[0][1]) : ""]])}
     ${tbl(["Category","Amount","Method","Description","Recorded by","Date",""],
       list.map(x=>`<tr>

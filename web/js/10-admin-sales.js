@@ -1,6 +1,45 @@
 "use strict";
 /* Admin: dashboard overview, orders, the sell flow, invoices, payments, receipts, refunds, customers. */
 
+function dashboardTrendCard(title, series, invert = false){
+  const values = series.map(point=>Math.max(0, Number(point.value)||0));
+  const moneyLabel = value => value > 0 ? ksh(value) : "KSh 0";
+  const max = Math.max(1, ...values);
+  const coords = values.map((value, i)=>({
+    x: 8 + i * (304 / Math.max(1, values.length - 1)),
+    y: 82 - (value / max) * 68
+  }));
+  const line = coords.map(point=>`${point.x.toFixed(1)},${point.y.toFixed(1)}`).join(" ");
+  const area = coords.length
+    ? `M${coords[0].x.toFixed(1)},88 L${coords.map(point=>`${point.x.toFixed(1)},${point.y.toFixed(1)}`).join(" L")} L${coords[coords.length-1].x.toFixed(1)},88 Z`
+    : "";
+  const recent = values.slice(-7).reduce((sum, value)=>sum+value, 0);
+  const previous = values.slice(0, 7).reduce((sum, value)=>sum+value, 0);
+  const rising = recent > previous;
+  const falling = recent < previous;
+  const favorable = invert ? falling : rising;
+  const direction = rising ? "up" : falling ? "down" : "steady";
+  const change = previous > 0
+    ? `${Math.round(Math.abs((recent-previous)/previous)*100)}%`
+    : recent > 0 ? "New" : "0%";
+  const valuesLabel = values.some(Boolean) ? "" : "No activity yet";
+  const total14 = values.reduce((sum, value)=>sum+value, 0);
+
+  return `<article class="dash-trend ${favorable?"is-good":(rising||falling)?"is-bad":"is-steady"}" tabindex="0">
+    <div class="dash-trend-head">
+      <div><h4>${esc(title)}</h4><span>14-day daily trend</span></div>
+      <span class="dash-trend-change ${direction}">${rising?"↑":falling?"↓":"→"} ${change}<small>vs prior 7d</small></span>
+    </div>
+    <div class="dash-trend-primary"><span>Last 7 days</span><strong>${esc(moneyLabel(recent))}</strong></div>
+    <svg class="dash-spark" viewBox="0 0 320 96" role="group" aria-label="${esc(title)} trend over the last 14 days">
+      <path class="dash-spark-area" d="${area}"/>
+      <polyline class="dash-spark-line" points="${line}"/>
+      ${coords.map((point, i)=>`<circle class="dash-spark-point" cx="${point.x.toFixed(1)}" cy="${point.y.toFixed(1)}" r="3" tabindex="0" aria-label="${esc(series[i].label)}: ${esc(moneyLabel(values[i]))}"><title>${esc(series[i].label)}: ${esc(moneyLabel(values[i]))}</title></circle>`).join("")}
+    </svg>
+    <div class="dash-trend-foot"><span>${valuesLabel||`Avg/day ${moneyLabel(recent/7)}`}</span><span>14d total <b>${esc(moneyLabel(total14))}</b></span></div>
+  </article>`;
+}
+
 function admOverview(){
   const now = new Date();
   const t0 = dayKey(todayISO());
@@ -29,6 +68,25 @@ function admOverview(){
   const outParts = DB.allParts().filter(p=>(Number(p.stock)||0)<=0);
   const reg = openRegister();
 
+  const trendDays = Array.from({length:14}, (_, i)=>{
+    const date = new Date(Date.parse(`${t0}T00:00:00Z`) + (i - 13) * 86400000);
+    const key = date.toISOString().slice(0,10);
+    return {key, label:date.toLocaleDateString("en-KE", {day:"numeric", month:"short"}), invoices:0, payments:0, expenses:0};
+  });
+  const trendByDay = new Map(trendDays.map(day=>[day.key, day]));
+  invs.forEach(invoice=>{
+    const day = trendByDay.get(dayKey(invoice.issueDate));
+    if(day) day.invoices += Number(invoice.total)||0;
+  });
+  pays.forEach(payment=>{
+    const day = trendByDay.get(dayKey(payment.createdAt));
+    if(day) day.payments += Number(payment.amount)||0;
+  });
+  DB.expenses.forEach(expense=>{
+    const day = trendByDay.get(dayKey(expense.date));
+    if(day) day.expenses += Number(expense.amount)||0;
+  });
+
   const recent = [
     ...pays.map(p=>({t:p.createdAt, s:`Payment ${p.no} · ${ksh(p.amount)} · ${p.method}`, k:"payments"})),
     ...invs.map(i=>({t:i.issueDate, s:`Invoice ${i.no} · ${customerName(i.customerId)} · ${ksh(i.total)}`, k:"invoices"})),
@@ -53,6 +111,12 @@ function admOverview(){
       ["Vehicle stock at cost", ksh(vehicleStockValue), DB.available().length + " vehicles"],
       ["Parts stock at cost", ksh(partStockValue), DB.allParts().length + " parts"]
     ])}
+
+    <section class="dash-trends" aria-label="Shop performance trends">
+      ${dashboardTrendCard("Invoiced sales", trendDays.map(day=>({label:day.label,value:day.invoices})))}
+      ${dashboardTrendCard("Payments collected", trendDays.map(day=>({label:day.label,value:day.payments})))}
+      ${dashboardTrendCard("Shop expenses", trendDays.map(day=>({label:day.label,value:day.expenses})), true)}
+    </section>
 
     <div class="adm-split">
       <div>
@@ -102,10 +166,10 @@ function admOrders(){
   const list = [...DB.orders.values()].sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));
   return `${toolbar("Orders", `<button class="btn btn--sm btn--solid" id="q-sell">Sell a vehicle</button>`)}
     ${statGrid([
-      ["All orders", list.length],
-      ["Completed", list.filter(o=>o.status==="COMPLETED").length],
-      ["Pending", list.filter(o=>o.status==="PENDING").length],
-      ["Cancelled", list.filter(o=>o.status==="CANCELLED").length]
+      ["All orders", list.length, "", {points:adminDailySeries(list,o=>o.createdAt,()=>1)}],
+      ["Completed", list.filter(o=>o.status==="COMPLETED").length, "", {points:adminDailySeries(list.filter(o=>o.status==="COMPLETED"),o=>o.createdAt,()=>1)}],
+      ["Pending", list.filter(o=>o.status==="PENDING").length, "", {points:adminDailySeries(list.filter(o=>o.status==="PENDING"),o=>o.createdAt,()=>1)}],
+      ["Cancelled", list.filter(o=>o.status==="CANCELLED").length, "", {points:adminDailySeries(list.filter(o=>o.status==="CANCELLED"),o=>o.createdAt,()=>1)}]
     ])}
     ${tbl(["Order","Customer","Vehicle","Total","Invoice","Status","Salesperson","Date",""],
       list.map(o=>{
@@ -610,8 +674,11 @@ function admPayments(){
   const list = [...DB.payments.values()].sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));
   const total = list.reduce((s,p)=>s+(Number(p.amount)||0),0);
   return `${toolbar("Payments")}
-    ${statGrid(METHODS.map(([k,l])=>[l, ksh(list.filter(p=>p.method===k).reduce((s,p)=>s+(Number(p.amount)||0),0))])
-      .concat([["Total received", ksh(total)]]))}
+    ${statGrid(METHODS.map(([k,l])=>{
+      const methodPayments = list.filter(p=>p.method===k);
+      return [l, ksh(methodPayments.reduce((s,p)=>s+(Number(p.amount)||0),0)), "",
+        {points:adminDailySeries(methodPayments,p=>p.createdAt,p=>p.amount)}];
+    }).concat([["Total received", ksh(total), "", {points:adminDailySeries(list,p=>p.createdAt,p=>p.amount)}]]))}
     ${tbl(["Payment","Invoice","Customer","Amount","Method","Reference","Till","Received by","Date"],
       list.map(p=>`<tr>
         <td style="color:var(--white)">${esc(p.no)}</td>
@@ -701,9 +768,10 @@ function refundForm(invId){
 
 function admRefunds(){
   const list = [...DB.refunds.values()].sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));
+  const total = list.reduce((s,r)=>s+(Number(r.amount)||0),0);
   return `${toolbar("Refunds and credit notes")}
-    ${statGrid([["Credit notes", list.length],
-      ["Total refunded", ksh(list.reduce((s,r)=>s+(Number(r.amount)||0),0))]])}
+    ${statGrid([["Credit notes", list.length, "", {points:adminDailySeries(list,r=>r.createdAt,()=>1)}],
+      ["Total refunded", ksh(total), "", {points:adminDailySeries(list,r=>r.createdAt,r=>r.amount)}]])}
     ${tbl(["Note","Invoice","Customer","Amount","Method","Reason","Issued by","Date"],
       list.map(r=>`<tr>
         <td style="color:var(--white)">${esc(r.no)}</td>

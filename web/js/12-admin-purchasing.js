@@ -6,8 +6,9 @@ function admPurchases(){
   const owed = list.reduce((s,p)=>s + Math.max(0,(Number(p.cost)||0)-(Number(p.paid)||0)), 0);
   const noCost = DB.available().filter(c=>!carCost(c.id));
   return `${toolbar("Purchases", `<button class="btn btn--sm btn--solid" id="q-purchase">Record purchase</button>`)}
-    ${statGrid([["Purchases", list.length],
-      ["Spent on stock", ksh(list.reduce((s,p)=>s+(Number(p.cost)||0),0))],
+    ${statGrid([["Purchases", list.length, "", {points:adminDailySeries(list,p=>p.date,()=>1)}],
+      ["Spent on stock", ksh(list.reduce((s,p)=>s+(Number(p.cost)||0),0)), "",
+        {points:adminDailySeries(list,p=>p.date,p=>p.cost),invert:true}],
       ["Owed to suppliers", ksh(owed)],
       ["Vehicles without cost", noCost.length]])}
     ${noCost.length?`<div class="notice" style="margin-bottom:20px">${noCost.length} available vehicle${noCost.length===1?" has":"s have"}
