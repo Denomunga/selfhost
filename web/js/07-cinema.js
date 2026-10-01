@@ -497,9 +497,9 @@ function mountCinema(){
       };
       const setTurn = (page, amount) => {
         if(!page) return;
-        const angle = -154 * amount;
-        const lift = 42 * amount;
-        page.style.transform = `rotateY(${angle.toFixed(2)}deg) rotateX(${lift.toFixed(2)}deg) translateZ(${(amount * -70).toFixed(1)}px)`;
+        const angle = -180 * amount;
+        const lift = 12 * amount;
+        page.style.transform = `translate3d(${(amount * 100).toFixed(1)}%,0,${(amount * -18).toFixed(1)}px) rotateY(${angle.toFixed(2)}deg) rotateX(${lift.toFixed(2)}deg)`;
       };
       const turnDuration = 0.24;
       setTurn(titlePage, turn(0.08, 0.08 + turnDuration));
